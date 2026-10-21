@@ -147,11 +147,11 @@ It runs 10 checks end to end: logins for each role, access limits, a birth regis
 
 | Name | Role |
 |---|---|
-| Yumna Faris | TODO |
-| Hana Hilmy | TODO |
-| Uzman Badusa | TODO |
-| Ajmal Rizwan | TODO |
-| Ahmad Bilaal | TODO |
+| Ajmal Rizwan | Project Lead & Full-Stack Architecture |
+| Yumna Faris | Frontend & UI/UX Design |
+| Hana Hilmy | Database Architecture & Data Modeling |
+| Uzman Badusa | Backend API & Ministry Modules |
+| Ahmad Bilaal | Security, Testing & Quality Assurance |
 
 ## License
 
