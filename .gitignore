@@ -1,0 +1,26 @@
+# dependencies
+node_modules/
+
+# secrets
+.env
+.env.*
+!.env.example
+
+# user uploads (keep the two seeded demo photos and the folder itself)
+uploads/*
+!uploads/.gitkeep
+!uploads/citizen_yumna.jpg
+!uploads/citizen_bilaal.jpg
+
+# logs
+*.log
+npm-debug.log*
+
+# editors / OS
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+.DS_Store
+Thumbs.db

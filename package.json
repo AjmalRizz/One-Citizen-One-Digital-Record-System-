@@ -1,0 +1,42 @@
+{
+  "name": "ocodr-platform",
+  "version": "1.0.0",
+  "description": "One Citizen One Digital Record (OCODR) - Unified National Digital Identity & Record Platform",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "seed": "node src/scripts/seed.js",
+    "clean:data": "node src/scripts/clean-test-data.js",
+    "test:api": "node src/scripts/test-api.js",
+    "test:photo": "node src/scripts/test-photo-upload.js",
+    "test:edit": "node src/scripts/test-edit-citizen.js",
+    "test:delete": "node src/scripts/test-delete-citizen.js",
+    "test:triple": "node src/scripts/test-triple-auth-and-register.js"
+  },
+  "keywords": [
+    "digital-identity",
+    "citizen-record",
+    "rbac",
+    "jwt",
+    "otp",
+    "audit-log",
+    "express",
+    "mysql"
+  ],
+  "author": "OCODR Team",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "mysql2": "^3.9.7",
+    "nodemailer": "^6.9.13",
+    "uuid": "^9.0.1"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
