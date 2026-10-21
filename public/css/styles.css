@@ -1,0 +1,515 @@
+
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&display=swap');
+
+:root {
+  --sl-maroon: #8D153A;
+  --sl-maroon-dark: #660B25;
+  --sl-maroon-deep: #4A0518;
+  --sl-maroon-light: #A81A45;
+  --sl-maroon-soft: #FDF2F4;
+  --sl-maroon-border: #F7D5DC;
+
+  --sl-gold: #FFBE29;
+  --sl-gold-dark: #C98D00;
+  --sl-gold-light: #FFE082;
+  --sl-gold-soft: #FFF9E6;
+  --sl-gold-border: #FFE699;
+
+  --sl-green: #00534E;
+  --sl-green-dark: #003A36;
+  --sl-green-light: #007A73;
+  --sl-green-soft: #E6F3F2;
+
+  --sl-orange: #EB7400;
+  --sl-orange-dark: #B85B00;
+  --sl-orange-soft: #FFF2E6;
+
+  --bg-pure-white: #ffffff;
+  --bg-surface: #ffffff;
+  --bg-subtle: #f8fafc;
+  --bg-light: #f1f5f9;
+
+  --text-darkest: #090d16;
+  --text-main: #0f172a;
+  --text-body: #1e293b;
+  --text-muted: #334155;
+  --text-secondary: #475569;
+
+  /* Borders & Shadows */
+  --border-light: #e2e8f0;
+  --border-medium: #cbd5e1;
+  --border-dark: #94a3b8;
+}
+
+/* Base Body Styles - Pure White Background */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: var(--text-main);
+  background-color: #ffffff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6, .font-heading {
+  font-family: 'Outfit', 'Inter', sans-serif;
+  color: var(--text-darkest);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* Sri Lankan National Tricolor Top Ribbon */
+.sl-ribbon-stripe {
+  height: 4px;
+  width: 100%;
+  background: linear-gradient(90deg, 
+    #00534E 0%, #00534E 15%, 
+    #EB7400 15%, #EB7400 30%, 
+    #8D153A 30%, #8D153A 85%, 
+    #FFBE29 85%, #FFBE29 100%
+  );
+}
+
+.sl-ribbon-stripe-thin {
+  height: 3px;
+  width: 100%;
+  background: linear-gradient(90deg, 
+    #00534E 0%, #00534E 15%, 
+    #EB7400 15%, #EB7400 30%, 
+    #8D153A 30%, #8D153A 85%, 
+    #FFBE29 85%, #FFBE29 100%
+  );
+}
+
+/* Sri Lankan Themed Action Buttons */
+.btn-sl-maroon {
+  background-color: #8D153A;
+  color: #ffffff;
+  border: 1px solid #730E2E;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(141, 21, 58, 0.2);
+}
+
+.btn-sl-maroon:hover {
+  background-color: #730E2E;
+  border-color: #FFBE29;
+  box-shadow: 0 4px 8px rgba(141, 21, 58, 0.3);
+  color: #ffffff;
+}
+
+.btn-sl-green {
+  background-color: #00534E;
+  color: #ffffff;
+  border: 1px solid #003D39;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 83, 78, 0.2);
+}
+
+.btn-sl-green:hover {
+  background-color: #003D39;
+  box-shadow: 0 4px 8px rgba(0, 83, 78, 0.3);
+  color: #ffffff;
+}
+
+.btn-sl-gold {
+  background-color: #FFBE29;
+  color: #4A0518;
+  border: 1px solid #D49000;
+  font-weight: 700;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(212, 144, 0, 0.2);
+}
+
+.btn-sl-gold:hover {
+  background-color: #EAA000;
+  color: #000000;
+  box-shadow: 0 4px 8px rgba(212, 144, 0, 0.3);
+}
+
+.btn-sl-white {
+  background-color: #ffffff;
+  color: #8D153A;
+  border: 1.5px solid #8D153A;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-sl-white:hover {
+  background-color: #FDF2F4;
+  color: #660B25;
+  border-color: #660B25;
+}
+
+/* Glass & Card Elevation on White Background */
+.white-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  border-radius: 16px;
+}
+
+.white-card-elevated {
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  border-radius: 16px;
+}
+
+.smart-nic-container {
+  perspective: 1200px;
+  max-width: 620px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.smart-nic-flipper {
+  position: relative;
+  width: 100%;
+  min-height: 400px;
+  transition: transform 0.65s cubic-bezier(0.4, 0.2, 0.2, 1);
+  transform-style: preserve-3d;
+}
+
+.smart-nic-flipper.flipped {
+  transform: rotateY(180deg);
+}
+
+.smart-nic-flipper.flipped .smart-nic-back {
+  z-index: 3;
+  pointer-events: auto;
+}
+
+.smart-nic-flipper.flipped .smart-nic-front {
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Dual View (Front and Back Faces Side-by-Side) */
+.smart-nic-container.dual-view {
+  max-width: 1180px;
+  width: 100%;
+}
+
+.smart-nic-container.dual-view .smart-nic-flipper {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+  transform: none !important;
+  min-height: auto;
+}
+
+.smart-nic-container.dual-view .smart-nic-face {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 400px;
+  transform: none !important;
+  z-index: 2 !important;
+  pointer-events: auto !important;
+}
+
+.smart-nic-face {
+  width: 100%;
+  min-height: 400px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 18px;
+  border: 1.5px solid #D4AF37;
+  box-shadow: 0 15px 35px -5px rgba(180, 140, 50, 0.28), 0 0 0 1px rgba(212, 175, 55, 0.35);
+  background: radial-gradient(circle at 50% 50%, #FFFEF5 0%, #FAF2D8 60%, #F5E5B8 100%);
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.85) 0%, rgba(250, 242, 216, 0.9) 100%),
+    repeating-radial-gradient(circle at 50% 50%, transparent 0, transparent 5px, rgba(212, 175, 55, 0.07) 6px, transparent 7px);
+  position: relative;
+  overflow: hidden;
+  color: #0f172a;
+}
+
+.smart-nic-front {
+  position: relative;
+  z-index: 2;
+  min-height: 400px;
+}
+
+.smart-nic-back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+  transform: rotateY(180deg);
+  z-index: 1;
+}
+
+/* Front Watermark: Central Sri Lankan Lion with Sword */
+.smart-nic-lion-watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 260px;
+  height: 260px;
+  background: url('/images/sl_lion_watermark.svg') no-repeat center;
+  background-size: contain;
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Back Watermark: DRP Seal */
+.smart-nic-drp-watermark {
+  position: absolute;
+  top: 50%;
+  left: 35%;
+  transform: translate(-50%, -50%);
+  width: 220px;
+  height: 220px;
+  background: url('/images/sri_lanka_emblem.png') no-repeat center;
+  background-size: contain;
+  opacity: 0.12;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Gold Nelum Lotus Embellishment */
+.smart-nic-lotus {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  width: 44px;
+  height: 38px;
+  background: url('/images/sl_lotus.svg') no-repeat center;
+  background-size: contain;
+  opacity: 0.85;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Smart NIC Official Security Typography */
+.nic-header-si {
+  font-size: 11px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.nic-header-ta {
+  font-size: 11px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.nic-header-en {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  color: #0f172a;
+}
+
+.nic-field-label {
+  font-size: 10px;
+  font-weight: 800;
+  color: #334155;
+  display: block;
+}
+
+.nic-field-value {
+  font-size: 12px;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.nic-signature {
+  font-family: 'Brush Script MT', 'Segoe Script', cursive, sans-serif;
+  font-size: 20px;
+  color: #0c2d48;
+  letter-spacing: 0.05em;
+  font-style: italic;
+  font-weight: bold;
+}
+
+.nic-card-serial {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  color: #0f172a;
+}
+
+/* Gold Foil DRP Stamp on Back of Card */
+.nic-drp-stamp {
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  color: #c59b27;
+  text-shadow: 1px 1px 0px #fff, -1px -1px 0px #977313;
+  line-height: 1;
+}
+
+/* Legacy support for previous class names */
+.digital-id-card {
+  border-radius: 18px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   DASHBOARD DARK TYPOGRAPHY GUARDS
+   Ensures razor sharp dark text on light backgrounds
+   ========================================================================== */
+.dash-heading {
+  color: #0f172a !important;
+  font-weight: 800 !important;
+}
+
+.dash-subheading {
+  color: #1e293b !important;
+  font-weight: 600 !important;
+}
+
+.dash-label {
+  color: #1e293b !important;
+  font-weight: 700 !important;
+  font-size: 0.75rem !important;
+  letter-spacing: 0.025em !important;
+}
+
+.dash-body {
+  color: #1e293b !important;
+  font-weight: 500 !important;
+}
+
+.dash-muted {
+  color: #334155 !important;
+  font-weight: 500 !important;
+}
+
+/* Form Input Enhancements */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="date"],
+select,
+textarea {
+  color: #0f172a !important;
+  font-weight: 500 !important;
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: #8D153A !important;
+  box-shadow: 0 0 0 3px rgba(141, 21, 58, 0.15) !important;
+  outline: none !important;
+}
+
+/* Table Enhancements for High Visibility */
+table thead th {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+  background-color: #f8fafc !important;
+  border-bottom: 2px solid #cbd5e1 !important;
+  font-size: 0.75rem !important;
+  letter-spacing: 0.03em !important;
+}
+
+table tbody td {
+  color: #1e293b !important;
+  font-weight: 500 !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+table tbody tr:hover td {
+  background-color: #f8fafc !important;
+}
+
+/* 6-Digit OTP Box Styling */
+.otp-digit-input {
+  width: 48px;
+  height: 56px;
+  font-size: 24px;
+  font-weight: 800;
+  text-align: center;
+  border-radius: 10px;
+  border: 2px solid #cbd5e1;
+  background-color: #ffffff;
+  color: #8D153A;
+  transition: all 0.2s ease-in-out;
+}
+
+.otp-digit-input:focus {
+  border-color: #8D153A;
+  box-shadow: 0 0 0 3px rgba(141, 21, 58, 0.2);
+  outline: none;
+}
+
+/* Role Badges with Sri Lankan & Distinct Palettes */
+.badge-citizen { background-color: #FDF2F4; color: #8D153A; border: 1.5px solid #F7D5DC; font-weight: 700; }
+.badge-hospital { background-color: #fee2e2; color: #991b1b; border: 1.5px solid #fecaca; font-weight: 700; }
+.badge-school { background-color: #FFF9E6; color: #92400e; border: 1.5px solid #FFE082; font-weight: 700; }
+.badge-university { background-color: #f3e8ff; color: #6b21a8; border: 1.5px solid #e9d5ff; font-weight: 700; }
+.badge-police { background-color: #E6F3F2; color: #00534E; border: 1.5px solid #B3DDD9; font-weight: 700; }
+.badge-immigration { background-color: #FFF2E6; color: #B85B00; border: 1.5px solid #FFD8B3; font-weight: 700; }
+.badge-registrar { background-color: #ecfdf5; color: #047857; border: 1.5px solid #a7f3d0; font-weight: 700; }
+.badge-admin { background-color: #312e81; color: #ffffff; border: 1.5px solid #4338ca; font-weight: 700; }
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f8fafc;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Print Friendly formatting for National Identity */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #smart-nic-container, #smart-nic-container *,
+  #preview-nic-container, #preview-nic-container * {
+    visibility: visible;
+  }
+  #smart-nic-container,
+  #preview-nic-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100% !important;
+    max-width: 100% !important;
+    display: block !important;
+  }
+  .smart-nic-flipper {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 20px !important;
+    transform: none !important;
+  }
+  .smart-nic-face {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    width: 48% !important;
+    transform: none !important;
+    box-shadow: none !important;
+    border: 1.5px solid #000 !important;
+    page-break-inside: avoid;
+  }
+}

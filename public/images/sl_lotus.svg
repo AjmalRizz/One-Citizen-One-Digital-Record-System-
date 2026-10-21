@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 80" fill="none">
+  <!-- Lotus (Nelum) petals in authentic gold/copper style -->
+  <g fill="#D49B24" stroke="#9A6B0A" stroke-width="0.8" opacity="0.85">
+    <!-- Center petal -->
+    <path d="M 50,8 C 45,28 42,48 50,65 C 58,48 55,28 50,8 Z"/>
+    <!-- Inner petals left & right -->
+    <path d="M 50,22 C 38,32 30,46 38,62 C 45,56 48,46 50,22 Z"/>
+    <path d="M 50,22 C 62,32 70,46 62,62 C 55,56 52,46 50,22 Z"/>
+    <!-- Outer petals -->
+    <path d="M 44,38 C 28,46 20,58 26,68 C 34,66 40,58 44,38 Z"/>
+    <path d="M 56,38 C 72,46 80,58 74,68 C 66,66 60,58 56,38 Z"/>
+    <!-- Outermost base leaves -->
+    <path d="M 38,54 C 18,60 12,68 18,74 C 28,72 34,65 38,54 Z"/>
+    <path d="M 62,54 C 82,60 88,68 82,74 C 72,72 66,65 62,54 Z"/>
+    <!-- Base stand -->
+    <path d="M 28,72 Q 50,68 72,72 Q 50,77 28,72 Z" fill="#9A6B0A"/>
+  </g>
+</svg>

@@ -1,0 +1,2101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OCODR Dashboard - Democratic Socialist Republic of Sri Lanka National Portal</title>
+  <meta name="description" content="One Citizen One Digital Record (OCODR) - Institutional and Citizen Management Dashboard.">
+
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="bg-slate-50/60 text-slate-900 antialiased min-h-screen flex flex-col font-sans">
+
+  <div class="sl-ribbon-stripe"></div>
+
+  <!-- Top App Navigation Header (Clean White with Sri Lankan Accents) -->
+  <header class="bg-white text-slate-900 border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      
+      <!-- Brand &amp; Title -->
+      <div class="flex items-center space-x-3.5">
+        <a href="/" class="flex items-center space-x-3 group">
+          <div class="w-12 h-12 rounded-xl bg-amber-50 border border-amber-300 flex items-center justify-center p-1 shadow-sm shrink-0 group-hover:scale-105 transition">
+            <img src="/images/sri_lanka_emblem.png" alt="Emblem" class="w-10 h-10 object-contain">
+          </div>
+          <div>
+            <span class="text-[10px] tracking-wider text-[#8D153A] font-black block uppercase">Democratic Socialist Republic of Sri Lanka</span>
+            <span class="text-base sm:text-lg font-black text-slate-900 tracking-tight flex items-center gap-2">
+              OCODR Portal <span class="hidden sm:inline text-[11px] bg-amber-100 text-amber-900 font-bold px-2 py-0.5 rounded border border-amber-300">National Core</span>
+            </span>
+          </div>
+        </a>
+
+        <!-- Active Role Badge Display -->
+        <span id="header-role-badge" class="ml-2 text-xs font-black px-3 py-1 rounded-full border bg-amber-50 text-[#8D153A] border-amber-300">
+          Loading...
+        </span>
+      </div>
+
+      <!-- Right Header Profile &amp; Actions -->
+      <div class="flex items-center space-x-4">
+        <!-- Search trigger for officials -->
+        <div id="quick-search-container" class="hidden md:flex items-center relative">
+          <input type="text" id="header-citizen-search" 
+                 onkeydown="if(event.key==='Enter') executeHeaderSearch()"
+                 class="w-60 pl-8 pr-3 py-2 text-xs bg-slate-50 border-2 border-slate-300 rounded-xl text-slate-900 font-semibold focus:outline-none focus:border-[#8D153A] focus:bg-white transition">
+          <i class="fa-solid fa-magnifying-glass absolute left-2.5 text-slate-500 text-xs"></i>
+          <button type="button" onclick="executeHeaderSearch()" class="ml-1.5 btn-sl-maroon text-white px-3 py-2 rounded-xl text-xs font-bold shadow-sm">Search</button>
+        </div>
+
+        <div class="flex items-center space-x-3.5">
+          <div id="header-avatar-btn" onclick="openPhotoUploadModal()" 
+               class="cursor-pointer group relative w-10 h-10 rounded-full border-2 border-[#FFBE29] overflow-hidden flex items-center justify-center text-xs font-bold text-white shadow-sm transition hover:scale-105 shrink-0 bg-slate-900" 
+               title="Click to view or upload profile picture">
+            <img id="header-avatar-img" src="/images/citizen_yumna.jpg" onerror="this.onerror=null; this.src='/images/citizen_yumna.jpg';" class="w-full h-full object-cover" alt="Avatar">
+            <span id="header-avatar-initials" class="hidden">U</span>
+            <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center text-[11px] text-white transition">
+              <i class="fa-solid fa-camera"></i>
+            </div>
+          </div>
+
+          <div class="text-right hidden sm:block">
+            <div id="user-display-name" class="text-xs font-black text-slate-900">User</div>
+            <div id="user-display-email" class="text-[11px] font-bold text-slate-600">user@ocodr.gov.lk</div>
+          </div>
+
+          <!-- Fixed Logout Button -->
+          <button type="button" id="header-logout-btn" onclick="handleLogout()" 
+                  class="text-xs bg-rose-50 hover:bg-rose-100 text-[#8D153A] border border-rose-300 hover:border-rose-400 px-3.5 py-2 rounded-xl font-black transition flex items-center gap-1.5 shadow-sm">
+            <i class="fa-solid fa-power-off text-[#8D153A]"></i> <span class="hidden sm:inline">Logout</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Dashboard Main Layout -->
+  <div class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col md:flex-row gap-6">
+
+    <!-- Sidebar Navigation -->
+    <aside class="w-full md:w-64 shrink-0">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto">
+        
+        <!-- Role Banner Inside Sidebar -->
+        <div class="p-3.5 rounded-xl bg-amber-50/70 border border-amber-200 mb-4 text-center">
+          <div id="sidebar-role-icon" class="w-12 h-12 rounded-xl mx-auto flex items-center justify-center text-xl mb-2 bg-[#8D153A] text-amber-300 shadow">
+            <i class="fa-solid fa-user"></i>
+          </div>
+          <div id="sidebar-role-name" class="font-black text-xs uppercase tracking-wider text-slate-900">CITIZEN</div>
+          <div id="sidebar-role-desc" class="text-[11px] font-bold text-slate-700">Authenticated National Session</div>
+        </div>
+
+        <!-- Dynamic Menu Items Container -->
+        <nav id="sidebar-menu" class="space-y-1.5 text-xs font-bold text-slate-900">
+          <!-- Populated dynamically based on role by app.js -->
+        </nav>
+
+        <!-- Switch Persona Quick Tool -->
+        <div class="mt-6 pt-4 border-t border-slate-200">
+          <span class="text-[10px] font-black uppercase tracking-wider text-slate-700 block mb-2">Switch Test Account</span>
+          <select id="quick-role-select" onchange="switchPersona(this.value)" class="w-full text-xs p-2.5 bg-slate-50 border-2 border-slate-300 rounded-xl text-slate-900 font-bold focus:outline-none focus:border-[#8D153A]">
+            <option value="">Select Demo Account...</option>
+            <option value="citizen">Citizen (Yumna Silva)</option>
+            <option value="doctor.perera">Hospital (Dr. Perera)</option>
+            <option value="principal.bandara">School (Principal Bandara)</option>
+            <option value="registrar.uoc">University (UOC Registrar)</option>
+            <option value="officer.fernando">Police (Traffic / Crime)</option>
+            <option value="officer.wickramasinghe">Immigration (Border Control)</option>
+            <option value="registrar.vital">Registrar General (Civil Vital)</option>
+            <option value="admin">System Admin (Audit / Telemetry)</option>
+          </select>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Dynamic Panels -->
+    <main class="flex-1 min-w-0 space-y-6">
+
+      <!-- Active Citizen Context Banner (Shown when an official is inspecting a citizen) -->
+      <div id="official-citizen-context-bar" class="hidden bg-[#8D153A] text-white p-4 rounded-2xl shadow-lg flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+        <div class="flex items-center space-x-3.5">
+          <div class="w-10 h-10 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center font-bold">
+            <i class="fa-solid fa-address-book text-base"></i>
+          </div>
+          <div>
+            <div class="text-[10px] text-amber-200 font-black uppercase tracking-wider">Currently Inspecting Citizen:</div>
+            <div class="font-black text-base flex items-center gap-2">
+              <span id="context-citizen-name">Citizen Full Name</span>
+              <span id="context-citizen-id" class="text-xs font-mono bg-black/30 px-2.5 py-0.5 rounded-lg border border-amber-300/40 text-amber-300">ID</span>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 text-xs">
+          <span class="bg-emerald-500/30 text-emerald-200 border border-emerald-400 px-3 py-1 rounded-full font-bold">
+            <i class="fa-solid fa-shield-check"></i> Statutory View
+          </span>
+          <button type="button" onclick="clearInspectedCitizen()" class="bg-white/20 hover:bg-white/30 text-white font-bold px-3 py-1 rounded-lg transition">
+            Clear Search
+          </button>
+        </div>
+      </div>
+
+      <!-- Toast Alert Banner -->
+      <div id="dashboard-toast" class="hidden p-4 rounded-xl border text-sm font-bold"></div>
+
+      <!-- VIEW 1: Digital National ID Card &amp; Citizen Overview -->
+      <section id="view-citizen-card" class="space-y-6">
+        
+        <!-- Official Sri Lankan National Smart Identity Card (Smart NIC) Section -->
+        <div id="nic-section-wrapper" class="max-w-2xl mx-auto space-y-4 transition-all duration-300">
+          
+          <!-- Card Side Selector Controls -->
+          <div class="flex flex-wrap items-center justify-between gap-2 bg-white px-4 py-2.5 rounded-2xl border border-slate-200 shadow-sm text-xs font-bold">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-slate-500 font-extrabold uppercase text-[10px] tracking-wider">Inspect View:</span>
+              <button type="button" id="btn-show-front" onclick="showSmartNicFace('front')" class="px-3 py-1.5 rounded-xl bg-[#8D153A] text-white shadow-sm transition">
+                <i class="fa-solid fa-id-card mr-1"></i> Front Face (Identity &amp; Photo)
+              </button>
+              <button type="button" id="btn-show-back" onclick="showSmartNicFace('back')" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 transition">
+                <i class="fa-solid fa-location-dot text-amber-600 mr-1"></i> Back Face (Address &amp; QR)
+              </button>
+              <button type="button" id="btn-show-dual" onclick="showSmartNicFace('dual')" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 transition" title="Show Front and Back Face together">
+                <i class="fa-solid fa-columns mr-1"></i> Both Sides (Front &amp; Back)
+              </button>
+            </div>
+            <button type="button" onclick="toggleSmartNicFlip()" class="px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 font-black transition flex items-center gap-1.5 shadow-sm">
+              <i class="fa-solid fa-arrows-rotate text-amber-600"></i> Flip Card (3D)
+            </button>
+          </div>
+
+          <!-- Smart NIC 3D Flipper Container -->
+          <div id="smart-nic-container" class="smart-nic-container">
+            <div id="smart-nic-flipper" class="smart-nic-flipper">
+
+              <div id="smart-nic-front" class="smart-nic-face smart-nic-front p-5 sm:p-7 min-h-[350px]">
+                
+                <!-- Central Sri Lankan Lion Watermark -->
+                <div class="smart-nic-lion-watermark"></div>
+
+                <!-- Golden Nelum Lotus at Bottom Right -->
+                <div class="smart-nic-lotus"></div>
+
+                <!-- Card Header -->
+                <div class="flex justify-between items-start border-b border-amber-900/15 pb-3 mb-4 relative z-10">
+                  <div>
+                    <div class="flex items-center gap-2 text-slate-900">
+                      <span class="nic-header-si">ශ්‍රී ලංකා</span>
+                      <span class="text-slate-400 font-bold">&bull;</span>
+                      <span class="nic-header-ta">இலங்கை</span>
+                      <span class="text-slate-400 font-bold">&bull;</span>
+                      <span class="nic-header-en text-[#8D153A]">SRI LANKA (OCODR)</span>
+                    </div>
+                    <div class="text-[11px] font-black text-slate-800 tracking-tight mt-0.5">
+                      පුරවැසි හැඳුනුම්පත &bull; குடிமக்கள் அடையாள அட்டை &bull; CITIZEN IDENTITY CARD
+                    </div>
+                    <div class="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1">
+                      <div class="flex items-center gap-1.5">
+                        <span class="text-[10px] font-black text-slate-700">පුරවැසි අංකය / Citizen ID:</span>
+                        <span id="card-citizen-id-header" class="font-mono text-sm sm:text-base font-black text-[#8D153A] tracking-wider">LK-19900512-0042</span>
+                      </div>
+                      <div class="flex items-center gap-1.5 text-xs">
+                        <span class="text-[10px] font-bold text-slate-500">NIC No:</span>
+                        <span id="card-nic-number" class="font-mono font-bold text-slate-900">199055401234</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- State Emblem of Sri Lanka in Full Color -->
+                  <div class="w-14 h-14 bg-white/80 rounded-xl border border-amber-300 flex items-center justify-center p-1 shrink-0 shadow-sm">
+                    <img src="/images/sri_lanka_emblem.png" alt="State Emblem of Sri Lanka" class="w-12 h-12 object-contain">
+                  </div>
+                </div>
+
+                <!-- Card Body: Photo &amp; Identity Information -->
+                <div class="grid grid-cols-1 sm:grid-cols-12 gap-5 items-center relative z-10">
+                  
+                  <!-- Left: Citizen Photo &amp; Holder Signature -->
+                  <div class="sm:col-span-4 flex flex-col items-center">
+                    <div id="card-photo-container" class="relative w-28 h-32 rounded-xl border-2 border-[#D4AF37] overflow-hidden shadow-md bg-slate-100 flex items-center justify-center">
+                      <img id="card-citizen-photo" src="/images/citizen_yumna.jpg" onerror="this.onerror=null; this.src='/images/citizen_yumna.jpg';" class="w-full h-full object-cover" alt="Citizen Photo">
+                    </div>
+
+                    <!-- Holder's Signature Section -->
+                    <div class="mt-2 text-center w-full px-1">
+                      <div class="text-[9px] font-bold text-slate-600 leading-tight">
+                        Holder's Signature<br>
+                        <span class="text-[8px]">හිමිකරුගේ අත්සන / உரிமையாளரின் கையொப்பம்</span>
+                      </div>
+                      <div id="card-holder-signature" class="nic-signature mt-0.5 border-b border-slate-400 pb-0.5 text-center">
+                        Yumna
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Right: Trilingual Demographics -->
+                  <div class="sm:col-span-8 space-y-2.5 text-xs">
+                    <div>
+                      <span class="nic-field-label">නම / பெயர் / Name:</span>
+                      <div id="card-name-si" class="font-bold text-slate-800 text-[11px]">යුම්නා ෆාතිමා සිල්වා</div>
+                      <div id="card-name-ta" class="font-bold text-slate-800 text-[11px]">யும்னா பாத்திமா சில்வா</div>
+                      <div id="card-full-name" class="font-black text-slate-950 text-sm tracking-wide uppercase">Yumna Fathima Silva</div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 pt-1">
+                      <div>
+                        <span class="nic-field-label">ස්ත්‍රී පුරුෂ භාවය / பால் / Sex:</span>
+                        <span id="card-gender-trilingual" class="nic-field-value text-slate-900 block">ස්ත්‍රී / பெண் / Female</span>
+                      </div>
+                      <div>
+                        <span class="nic-field-label">උපන් දිනය / பிறந்த திகதி / Date of Birth:</span>
+                        <span id="card-dob" class="nic-field-value font-mono text-slate-900 block">1990/05/12</span>
+                      </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 pt-1 border-t border-amber-900/10">
+                      <div>
+                        <span class="nic-field-label">Citizen ID</span>
+                        <span id="card-citizen-id" class="font-mono font-bold text-xs text-[#8D153A]">LK-19900512-0042</span>
+                      </div>
+                      <div>
+                        <span class="nic-field-label">Card Serial No</span>
+                        <span id="card-serial-front" class="font-mono font-bold text-xs text-slate-800">SL-2024-884920</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Front Bottom Indicator -->
+                <div class="mt-4 pt-2 border-t border-amber-900/10 flex justify-between items-center text-[10px] text-slate-600 font-bold relative z-10">
+                  <span>Democratic Socialist Republic of Sri Lanka &bull; OCODR National Identity System</span>
+                  <span class="text-[#00534E] font-black"><i class="fa-solid fa-circle-check"></i> OFFICIAL CITIZEN RECORD ACTIVE</span>
+                </div>
+              </div>
+
+              
+              <!-- 2. BACK FACE (Citizen Identity Card Back)  -->
+              
+              <div id="smart-nic-back" class="smart-nic-face smart-nic-back p-5 sm:p-7 min-h-[360px]">
+                
+                <!-- OCODR National Seal Watermark on Back -->
+                <div class="smart-nic-drp-watermark"></div>
+
+                <!-- Back Header: Prominent Official Address Section -->
+                <div class="space-y-1.5 text-xs relative z-10 border-b border-amber-900/20 pb-3 mb-3 bg-amber-50/70 p-3 rounded-xl border border-amber-300/60 shadow-sm">
+                  <div class="flex items-center justify-between border-b border-amber-900/10 pb-1.5 mb-1">
+                    <span class="inline-flex items-center gap-1.5 text-[10px] font-black text-[#8D153A] uppercase tracking-wider">
+                      <i class="fa-solid fa-location-dot text-rose-600"></i> ස්ථිර ලිපිනය / நிரந்தர முகவரி / REGISTERED RESIDENCE
+                    </span>
+                    <span class="text-[9px] font-extrabold text-emerald-800 bg-emerald-100/90 px-2 py-0.5 rounded border border-emerald-300">
+                      <i class="fa-solid fa-check-circle"></i> VERIFIED
+                    </span>
+                  </div>
+                  
+                  <div class="leading-tight">
+                    <span class="font-black text-slate-900 text-[11px]">ලිපිනය:</span>
+                    <span id="card-address-si" class="font-bold text-slate-800 ml-1.5 text-[11px]">අංක 42, ගාලු පාර, කොල්ලුපිටිය, කොළඹ 03.</span>
+                  </div>
+                  <div class="leading-tight">
+                    <span class="font-black text-slate-900 text-[11px]">முகவரி:</span>
+                    <span id="card-address-ta" class="font-bold text-slate-800 ml-1.5 text-[11px]">இல. 42, காலி வீதி, கொள்ளுப்பிட்டி, கொழும்பு 03.</span>
+                  </div>
+                  <div class="leading-tight pt-1">
+                    <span class="font-black text-[#8D153A] text-xs">Address:</span>
+                    <span id="card-address" class="font-black text-slate-950 uppercase ml-1.5 tracking-wide text-xs">NO. 42, GALLE ROAD, KOLLUPITIYA, COLOMBO 03, SRI LANKA</span>
+                  </div>
+
+                  <!-- Optional Current Address Row (Shown if different from permanent) -->
+                  <div id="card-current-address-container" class="hidden pt-1.5 border-t border-amber-900/10 text-[11px]">
+                    <span class="font-black text-slate-900">වත්මන් ලිපිනය / Current Address:</span>
+                    <span id="card-current-address" class="font-bold text-slate-800 ml-1 uppercase"></span>
+                  </div>
+                </div>
+
+                <!-- Birth Place Section -->
+                <div class="space-y-0.5 text-xs relative z-10 border-b border-amber-900/15 pb-2.5 mb-3">
+                  <div class="flex items-center gap-3">
+                    <div>
+                      <span class="font-black text-slate-800">උපන් ස්ථානය :</span>
+                      <span id="card-birthplace-si" class="font-semibold text-slate-900 ml-1">කොළඹ</span>
+                    </div>
+                    <div>
+                      <span class="font-black text-slate-800">பிறப்பிடம் :</span>
+                      <span id="card-birthplace-ta" class="font-semibold text-slate-900 ml-1">கொழும்பு</span>
+                    </div>
+                    <div>
+                      <span class="font-black text-slate-900">Birth Place :</span>
+                      <span id="card-birthplace" class="font-bold text-slate-950 uppercase ml-1">COLOMBO</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- OCODR Framework Authority &amp; Registrar General Signature -->
+                <div class="grid grid-cols-12 gap-3 items-center relative z-10 border-b border-amber-900/15 pb-3 mb-3">
+                  <!-- OCODR Stamp &amp; National System Text -->
+                  <div class="col-span-7 flex items-center gap-2.5">
+                    <span class="nic-drp-stamp shrink-0 text-[#8D153A]">OCODR</span>
+                    <div class="text-[9px] font-bold text-slate-700 leading-tight">
+                      එක් පුරවැසියෙක් එක් ඩිජිටල් වාර්තාවක් (OCODR) ජාතික පද්ධතිය<br>
+                      ஒரு குடிமகன் ஒரு டிஜிட்டல் பதிவு (OCODR) தேசிய கட்டமைப்பு<br>
+                      One Citizen One Digital Record System &bull; Democratic Socialist Republic of Sri Lanka
+                    </div>
+                  </div>
+
+                  <!-- National Digital Registrar Signature -->
+                  <div class="col-span-5 text-right">
+                    <div class="nic-signature text-sm font-bold text-slate-900">
+                      Pradeep Saputhanthri
+                    </div>
+                    <div class="text-[8px] font-bold text-slate-600 leading-tight">
+                      ජාතික ඩිජිටල් රෙජිස්ට්‍රාර් ජනරාල්<br>
+                      தேசிய டிஜிட்டல் பதிவாளர்<br>
+                      National Digital Registrar General &bull; OCODR
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Bottom Row: Dates, Serial Number &amp; QR Code -->
+                <div class="grid grid-cols-12 gap-3 items-end relative z-10">
+                  
+                  <!-- Left Metadata &amp; Serial Number -->
+                  <div class="col-span-8 space-y-1">
+                    <div class="flex items-center gap-4 text-[10px] font-bold text-slate-800">
+                      <div>Date of Issue: <span id="card-issue-date" class="font-mono font-black text-slate-900">2025/01/15</span></div>
+                      <div>P 7U520032 - N</div>
+                    </div>
+                    <div class="flex items-center gap-4 text-[10px] font-bold text-slate-800">
+                      <div>Date of Expiry: <span id="card-expiry-date" class="font-mono font-black text-slate-900">2035/01/14</span></div>
+                      <div>Previous ID No:</div>
+                    </div>
+                    <div class="pt-1 flex items-baseline gap-2">
+                      <span class="text-[10px] uppercase font-bold text-slate-500">Citizen Card Serial:</span>
+                      <span id="card-serial" class="nic-card-serial">08SLK-942</span>
+                    </div>
+                  </div>
+
+                  <!-- Right QR Code (Encodes Image 3 multi-line payload) -->
+                  <div class="col-span-4 flex flex-col items-center justify-end">
+                    <div id="card-qrcode" class="p-1 bg-white rounded-lg border border-slate-300 shadow-sm" title="Scan with camera to read Citizen Details &amp; NIC"></div>
+                    <span class="text-[9px] font-mono text-slate-600 font-bold mt-1 text-center">Citizen QR Code</span>
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons for Card -->
+        <div class="flex flex-wrap justify-center gap-3">
+          <!-- Admin Only Edit Information Button -->
+          <button type="button" id="btn-card-edit-info" onclick="openEditCitizenModal()" class="hidden btn-sl-gold text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-2 shadow-sm" title="Edit Citizen Information (Admin Only)">
+            <i class="fa-solid fa-pen-to-square"></i> Edit Information
+          </button>
+          <!-- Admin Only Delete Information Button -->
+          <button type="button" id="btn-card-delete-info" onclick="openDeleteCitizenModal()" class="hidden bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-2 shadow-sm" title="Delete or Clear Information (Admin Only)">
+            <i class="fa-solid fa-trash-can"></i> Delete Information
+          </button>
+          <button type="button" onclick="openPhotoUploadModal()" class="btn-sl-green text-white text-xs px-4 py-2.5 rounded-xl font-bold transition flex items-center gap-2 shadow-sm">
+            <i class="fa-solid fa-camera text-amber-300"></i> Add / Update Profile Picture
+          </button>
+          <button type="button" onclick="window.print()" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-2 shadow-sm">
+            <i class="fa-solid fa-print text-amber-300"></i> Print Digital Credential
+          </button>
+          <button type="button" onclick="copyQrToken()" class="btn-sl-maroon text-white text-xs px-4 py-2.5 rounded-xl font-bold transition flex items-center gap-2 shadow-sm">
+            <i class="fa-solid fa-copy text-amber-300"></i> Copy QR Token
+          </button>
+        </div>
+      </section>
+
+      <!-- VIEW 2: Healthcare &amp; Clinical Records -->
+      <section id="view-medical" class="hidden space-y-6">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+          <div class="flex justify-between items-center mb-6">
+            <div>
+              <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
+                <i class="fa-solid fa-heart-pulse text-red-600"></i> Healthcare &amp; Clinical Records
+              </h3>
+              <p class="text-xs text-slate-700 font-semibold mt-1">Official medical diagnoses, hospital admissions, and vital clinical alerts.</p>
+            </div>
+            <div id="medical-add-trigger" class="hidden">
+              <button type="button" onclick="switchView('view-hospital-add')" class="btn-sl-maroon text-white text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5">
+                <i class="fa-solid fa-plus text-amber-300"></i> Add Diagnosis
+              </button>
+            </div>
+          </div>
+
+          <!-- Critical Allergies &amp; Blood Group Banner -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+            <div class="p-4 rounded-xl bg-red-50 border-2 border-red-200 flex items-start space-x-3.5">
+              <div class="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center font-bold text-base shrink-0 shadow-sm">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+              </div>
+              <div>
+                <span class="text-xs font-black text-red-950 uppercase tracking-wider block">Documented Drug &amp; Food Allergies</span>
+                <span id="med-allergies-display" class="text-sm font-extrabold text-red-900">None Recorded</span>
+              </div>
+            </div>
+
+            <div class="p-4 rounded-xl bg-sky-50 border-2 border-sky-200 flex items-start space-x-3.5">
+              <div class="w-10 h-10 rounded-xl bg-sky-700 text-white flex items-center justify-center font-bold text-base shrink-0 shadow-sm">
+                <i class="fa-solid fa-droplet"></i>
+              </div>
+              <div>
+                <span class="text-xs font-black text-sky-950 uppercase tracking-wider block">Verified Blood Type</span>
+                <span id="med-blood-display" class="text-sm font-extrabold text-sky-950">O+ (Rh Positive)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Medical Diagnoses Table with High Contrast Dark Text -->
+          <h4 class="font-black text-sm text-slate-900 mb-3">Clinical Diagnoses &amp; Chronic Conditions</h4>
+          <div class="overflow-x-auto rounded-xl border border-slate-300 mb-8">
+            <table class="w-full text-xs text-left">
+              <thead class="bg-slate-100 text-slate-900 uppercase font-black border-b-2 border-slate-300">
+                <tr>
+                  <th class="p-3.5">Condition / Diagnosis</th>
+                  <th class="p-3.5">Type</th>
+                  <th class="p-3.5">Treating Facility</th>
+                  <th class="p-3.5">Attending Physician</th>
+                  <th class="p-3.5">Date</th>
+                  <th class="p-3.5">Clinical Notes</th>
+                </tr>
+              </thead>
+              <tbody id="table-medical-diagnoses" class="divide-y divide-slate-200 font-semibold text-slate-900">
+                <tr><td colspan="6" class="p-4 text-center text-slate-600 font-bold">Loading clinical records...</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Vaccination Passport Table -->
+          <h4 class="font-black text-sm text-slate-900 mb-3 flex items-center gap-2">
+            <i class="fa-solid fa-syringe text-[#00534E]"></i> National Immunization Registry
+          </h4>
+          <div class="overflow-x-auto rounded-xl border border-slate-300">
+            <table class="w-full text-xs text-left">
+              <thead class="bg-slate-100 text-slate-900 uppercase font-black border-b-2 border-slate-300">
+                <tr>
+                  <th class="p-3.5">Vaccine Name</th>
+                  <th class="p-3.5">Dose #</th>
+                  <th class="p-3.5">Batch Number</th>
+                  <th class="p-3.5">Administration Date</th>
+                  <th class="p-3.5">Vaccination Center</th>
+                  <th class="p-3.5">Administered By</th>
+                </tr>
+              </thead>
+              <tbody id="table-vaccination-records" class="divide-y divide-slate-200 font-semibold text-slate-900">
+                <tr><td colspan="6" class="p-4 text-center text-slate-600 font-bold">Loading vaccine records...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 3: Education &amp; Academic Qualifications -->
+      <section id="view-education" class="hidden space-y-6">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+          <div class="flex justify-between items-center mb-6">
+            <div>
+              <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
+                <i class="fa-solid fa-graduation-cap text-amber-600"></i> Academic Qualifications &amp; Records
+              </h3>
+              <p class="text-xs text-slate-700 font-semibold mt-1">Verified higher education degrees, secondary schooling, and national exam scores.</p>
+            </div>
+            <div id="education-add-trigger" class="hidden">
+              <button type="button" onclick="switchView('view-education-add')" class="btn-sl-gold text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-plus"></i> Add Academic Record
+              </button>
+            </div>
+          </div>
+
+          <!-- Higher Education Table -->
+          <h4 class="font-black text-sm text-slate-900 mb-3">Tertiary &amp; University Degrees</h4>
+          <div class="overflow-x-auto rounded-xl border border-slate-300 mb-8">
+            <table class="w-full text-xs text-left">
+              <thead class="bg-slate-100 text-slate-900 uppercase font-black border-b-2 border-slate-300">
+                <tr>
+                  <th class="p-3.5">Institution</th>
+                  <th class="p-3.5">Qualification Title</th>
+                  <th class="p-3.5">Level</th>
+                  <th class="p-3.5">Classification / GPA</th>
+                  <th class="p-3.5">Graduation</th>
+                  <th class="p-3.5">Status</th>
+                </tr>
+              </thead>
+              <tbody id="table-higher-education" class="divide-y divide-slate-200 font-semibold text-slate-900">
+                <tr><td colspan="6" class="p-4 text-center text-slate-600 font-bold">Loading qualifications...</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- School Education Table -->
+          <h4 class="font-black text-sm text-slate-900 mb-3">Primary &amp; Secondary Schooling</h4>
+          <div class="overflow-x-auto rounded-xl border border-slate-300 mb-8">
+            <table class="w-full text-xs text-left">
+              <thead class="bg-slate-100 text-slate-900 uppercase font-black border-b-2 border-slate-300">
+                <tr>
+                  <th class="p-3.5">School Name</th>
+                  <th class="p-3.5">Admission No</th>
+                  <th class="p-3.5">Tenure</th>
+                  <th class="p-3.5">Highest Grade Passed</th>
+                  <th class="p-3.5">Conduct &amp; Remarks</th>
+                </tr>
+              </thead>
+              <tbody id="table-school-education" class="divide-y divide-slate-200 font-semibold text-slate-900">
+                <tr><td colspan="5" class="p-4 text-center text-slate-600 font-bold">Loading schooling history...</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- National Exam Results -->
+          <h4 class="font-black text-sm text-slate-900 mb-3">Department of Examinations National Results</h4>
+          <div class="overflow-x-auto rounded-xl border border-slate-300">
+            <table class="w-full text-xs text-left">
+              <thead class="bg-slate-100 text-slate-900 uppercase font-black border-b-2 border-slate-300">
+                <tr>
+                  <th class="p-3.5">Examination</th>
+                  <th class="p-3.5">Index Number</th>
+                  <th class="p-3.5">Year</th>
+                  <th class="p-3.5">Subject</th>
+                  <th class="p-3.5">Grade</th>
+                </tr>
+              </thead>
+              <tbody id="table-exam-results" class="divide-y divide-slate-200 font-semibold text-slate-900">
+                <tr><td colspan="5" class="p-4 text-center text-slate-600 font-bold">Loading exam results...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 4: Passports &amp; Driving Licences -->
+      <section id="view-travel" class="hidden space-y-6">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+          <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
+                <i class="fa-solid fa-passport text-[#00534E]"></i> Passports &amp; Driving Credentials
+              </h3>
+              <p class="text-xs text-slate-700 font-semibold mt-1">Department of Immigration travel credentials and Motor Traffic driving licences.</p>
+            </div>
+            <!-- Add Credentials Buttons for CITIZEN (and immigration/police) - NOT ADMIN -->
+            <div id="travel-add-actions" class="hidden flex flex-wrap gap-2">
+              <button type="button" id="btn-add-passport-modal" onclick="openAddPassportModal()" class="btn-sl-maroon text-white text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-plus"></i> Add Passport Details
+              </button>
+              <button type="button" id="btn-add-licence-modal" onclick="openAddLicenceModal()" class="btn-sl-green text-white text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-plus"></i> Add Licence Details
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <!-- Passports Container -->
+            <div class="border border-slate-300 rounded-2xl p-5 bg-slate-50/70">
+              <div class="flex items-center justify-between mb-4">
+                <h4 class="font-black text-sm text-slate-900 flex items-center gap-2">
+                  <i class="fa-solid fa-earth-asia text-[#8D153A]"></i> Sri Lankan Passports
+                </h4>
+                <span class="text-[10px] text-slate-700 font-extrabold uppercase bg-white border border-slate-200 px-2 py-0.5 rounded">Dept of Immigration</span>
+              </div>
+              <div id="passports-card-list" class="space-y-3 font-semibold text-slate-900">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+
+            <!-- Driving Licence Container -->
+            <div class="border border-slate-300 rounded-2xl p-5 bg-slate-50/70">
+              <div class="flex items-center justify-between mb-4">
+                <h4 class="font-black text-sm text-slate-900 flex items-center gap-2">
+                  <i class="fa-solid fa-id-badge text-[#00534E]"></i> Driving Licence Status
+                </h4>
+                <span class="text-[10px] text-slate-700 font-extrabold uppercase bg-white border border-slate-200 px-2 py-0.5 rounded">Motor Traffic Dept</span>
+              </div>
+              <div id="licences-card-list" class="space-y-3 font-semibold text-slate-900">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 5: Civil Status &amp; Vital Statistics -->
+      <section id="view-vital" class="hidden space-y-6">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+          <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
+                <i class="fa-solid fa-stamp text-[#8D153A]"></i> Civil Status &amp; Vital Statistics
+              </h3>
+              <p class="text-xs text-slate-700 font-semibold mt-1">Official birth registration and civil marriage certificates issued by Registrar General's Dept.</p>
+            </div>
+            <!-- Add Vital Record Actions for CITIZEN (and registrar) - NOT ADMIN -->
+            <div id="vital-add-actions" class="hidden flex flex-wrap gap-2">
+              <button type="button" id="btn-add-vital-birth" onclick="openAddVitalBirth()" class="btn-sl-maroon text-white text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-plus"></i> Register Birth Record
+              </button>
+              <button type="button" id="btn-add-vital-marriage" onclick="openAddMarriageModal()" class="btn-sl-green text-white text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-plus"></i> Add Marriage Record
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Birth Certificate Summary -->
+            <div class="border border-emerald-300 rounded-2xl p-5 bg-emerald-50/40">
+              <h4 class="font-black text-sm text-emerald-950 mb-3 flex items-center gap-2">
+                <i class="fa-solid fa-baby text-[#00534E]"></i> Birth Certificate Record
+              </h4>
+              <div id="birth-registration-display" class="space-y-2 text-xs font-semibold text-slate-900">
+                <!-- Populated dynamically -->
+              </div>
+            </div>
+
+            <!-- Marriage Certificate Summary -->
+            <div class="border border-amber-300 rounded-2xl p-5 bg-amber-50/40">
+              <h4 class="font-black text-sm text-amber-950 mb-3 flex items-center gap-2">
+                <i class="fa-solid fa-ring text-amber-600"></i> Marriage Registration Record
+              </h4>
+              <div id="marriage-registration-display" class="space-y-2 text-xs font-semibold text-slate-900">
+                <!-- Populated dynamically -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 6: Document Management &amp; Uploads -->
+      <section id="view-documents" class="hidden space-y-6">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+          <div class="flex justify-between items-center mb-6">
+            <div>
+              <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
+                <i class="fa-solid fa-folder-open text-[#8D153A]"></i> Document Repository &amp; Storage
+              </h3>
+              <p class="text-xs text-slate-700 font-semibold mt-1">Securely preview official PDF certificates and supporting civil documentation.</p>
+            </div>
+          </div>
+
+          <!-- Document Upload Drag &amp; Drop Form -->
+          <form id="doc-upload-form" onsubmit="handleDocumentUpload(event)" class="mb-8 p-6 border-2 border-dashed border-slate-300 hover:border-[#8D153A] rounded-2xl bg-slate-50 transition">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+              <div>
+                <label class="block text-xs font-black text-slate-900 uppercase tracking-wider mb-1">Target Citizen ID</label>
+                <input type="text" id="upload-citizen-id" required
+                       class="w-full text-xs font-semibold p-2.5 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:border-[#8D153A]">
+              </div>
+
+              <div>
+                <label class="block text-xs font-black text-slate-900 uppercase tracking-wider mb-1">Module Category</label>
+                <select id="upload-category" class="w-full text-xs font-semibold p-2.5 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:border-[#8D153A]">
+                  <option value="MEDICAL">Medical Records</option>
+                  <option value="EDUCATION">Education Transcript</option>
+                  <option value="BIRTH">Birth Certificate</option>
+                  <option value="PASSPORT">Passport Copy</option>
+                  <option value="PROPERTY">Property Deed</option>
+                  <option value="MARRIAGE">Marriage Certificate</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-xs font-black text-slate-900 uppercase tracking-wider mb-1">Document Title</label>
+                <input type="text" id="upload-title" required
+                       class="w-full text-xs font-semibold p-2.5 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:border-[#8D153A]">
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label class="block text-xs font-black text-slate-900 uppercase tracking-wider mb-1">Select File (PDF, PNG, JPG up to 10MB)</label>
+              <input type="file" id="upload-file-input" required accept=".pdf,image/png,image/jpeg,image/webp"
+                     class="w-full text-xs text-slate-700 font-semibold file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-amber-100 file:text-amber-900 hover:file:bg-amber-200 cursor-pointer">
+            </div>
+
+            <div class="flex justify-end">
+              <button type="submit" id="btn-upload-submit" class="btn-sl-maroon text-white text-xs font-black px-5 py-2.5 rounded-xl transition flex items-center gap-2">
+                <i class="fa-solid fa-cloud-arrow-up text-amber-300"></i> Upload Document
+              </button>
+            </div>
+          </form>
+
+          <!-- Uploaded Documents Table with Dark Text -->
+          <h4 class="font-black text-sm text-slate-900 mb-3">Stored Documents for Citizen</h4>
+          <div class="overflow-x-auto rounded-xl border border-slate-300">
+            <table class="w-full text-xs text-left">
+              <thead class="bg-slate-100 text-slate-900 uppercase font-black border-b-2 border-slate-300">
+                <tr>
+                  <th class="p-3.5">Document Title</th>
+                  <th class="p-3.5">Category</th>
+                  <th class="p-3.5">File Type</th>
+                  <th class="p-3.5">Uploaded Date</th>
+                  <th class="p-3.5">Uploaded By</th>
+                  <th class="p-3.5 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="table-documents-list" class="divide-y divide-slate-200 font-semibold text-slate-900">
+                <tr><td colspan="6" class="p-4 text-center text-slate-600 font-bold">No documents found.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 7: Form - Add Diagnosis (HOSPITAL only) -->
+      <section id="view-hospital-add" class="hidden space-y-6">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 max-w-2xl mx-auto">
+          <div class="mb-6">
+            <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
+              <i class="fa-solid fa-stethoscope text-red-600"></i> Add Clinical Diagnosis / Treatment
+            </h3>
+            <p class="text-xs text-slate-700 font-semibold mt-1">Record an official medical condition in the national health database.</p>
+          </div>
+
+          <form id="form-add-diagnosis" onsubmit="handleAddDiagnosis(event)" class="space-y-4 text-xs font-semibold">
+            <div>
+              <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Citizen ID</label>
+              <input type="text" id="diag-citizen-id" required
+                     class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-red-500">
+            </div>
+
+            <div>
+              <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Diagnosed Condition</label>
+              <input type="text" id="diag-condition" required
+                     class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-red-500">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Hospital Facility</label>
+                <input type="text" id="diag-hospital" required
+                       class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-red-500">
+              </div>
+              <div>
+                <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Treating Physician</label>
+                <input type="text" id="diag-physician" required
+                       class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-red-500">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 items-center">
+              <div>
+                <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Diagnosis Date</label>
+                <input type="date" id="diag-date" required
+                       class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-red-500">
+              </div>
+              <div class="pt-4 flex items-center space-x-2">
+                <input type="checkbox" id="diag-chronic" class="w-4 h-4 text-red-600 rounded">
+                <label for="diag-chronic" class="font-black text-slate-900">Is Chronic Condition?</label>
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Noted Patient Allergies</label>
+              <input type="text" id="diag-allergies"
+                     class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-red-500">
+            </div>
+
+            <div>
+              <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Clinical Notes &amp; Prescriptions</label>
+              <textarea id="diag-notes" rows="3"
+                        class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-red-500"></textarea>
+            </div>
+
+            <div class="pt-3 flex justify-end gap-2">
+              <button type="button" onclick="switchView('view-medical')" class="px-4 py-2 bg-slate-200 text-slate-800 rounded-xl font-bold">Cancel</button>
+              <button type="submit" class="px-5 py-2 btn-sl-maroon text-white rounded-xl font-bold shadow">Save Clinical Record</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- VIEW 8: Form - Add Education Record -->
+      <section id="view-education-add" class="hidden space-y-6">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 max-w-2xl mx-auto">
+          <div class="mb-6">
+            <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
+              <i class="fa-solid fa-graduation-cap text-amber-600"></i> Add Academic Qualification
+            </h3>
+            <p class="text-xs text-slate-700 font-semibold mt-1">Register verified higher education degree or schooling credential.</p>
+          </div>
+
+          <form id="form-add-education" onsubmit="handleAddEducation(event)" class="space-y-4 text-xs font-semibold">
+            <div>
+              <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Citizen ID</label>
+              <input type="text" id="edu-citizen-id" required
+                     class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-amber-500">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Institution Name</label>
+                <input type="text" id="edu-institution" required
+                       class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-amber-500">
+              </div>
+              <div>
+                <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Qualification Level</label>
+                <select id="edu-level" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-amber-500">
+                    <option value="HND">Higher National Diploma</option>
+                  <option value="BACHELORS">Bachelor's Degree</option>
+                  <option value="MASTERS">Master's Degree</option>
+                  <option value="DOCTORATE">Doctorate (PhD)</option>
+                  <option value="DIPLOMA">National Diploma</option>
+                  <option value="VOCATIONAL">Vocational Certification</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Degree / Qualification Title</label>
+              <input type="text" id="edu-title" required
+                     class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-amber-500">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Class / Honours / GPA</label>
+                <input type="text" id="edu-gpa"
+                       class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-amber-500">
+              </div>
+              <div>
+                <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Graduation Year</label>
+                <input type="number" id="edu-year" required min="1950" max="2035"
+                       class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-amber-500">
+              </div>
+            </div>
+
+            <div class="pt-3 flex justify-end gap-2">
+              <button type="button" onclick="switchView('view-education')" class="px-4 py-2 bg-slate-200 text-slate-800 rounded-xl font-bold">Cancel</button>
+              <button type="submit" class="px-5 py-2 btn-sl-gold rounded-xl font-black shadow">Save Academic Record</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- VIEW 9: Form - Register Birth (REGISTRAR only) -->
+      <section id="view-registrar-birth" class="hidden space-y-6">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 max-w-2xl mx-auto">
+          <div class="mb-6">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-900 text-xs font-black mb-2 border border-emerald-300">
+              <i class="fa-solid fa-stamp text-[#00534E]"></i> Registrar General's Department
+            </div>
+            <h3 class="text-xl font-black text-slate-900">Register New Child Birth</h3>
+            <p class="text-xs text-slate-700 font-semibold mt-1">Official civil registration form. Generates permanent Citizen ID and cryptographic QR token atomically.</p>
+          </div>
+
+          <form id="form-register-birth" onsubmit="handleRegisterBirth(event)" autocomplete="off" class="space-y-4 text-xs font-semibold">
+            <div class="grid grid-cols-3 gap-3">
+              <div>
+                <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">First Name <span class="text-rose-600">*</span></label>
+                <input type="text" id="birth-first-name" required
+                       pattern="[a-zA-Z\s\.\'\-]{2,60}" title="Alphabetical characters only, minimum 2 letters"
+                       class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-emerald-500">
+              </div>
+              <div>
+                <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Middle Names</label>
+                <input type="text" id="birth-middle-names"
+                       pattern="[a-zA-Z\s\.\'\-]{2,60}" title="Alphabetical characters only"
+                       class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-emerald-500">
+              </div>
+              <div>
+                <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Surname <span class="text-rose-600">*</span></label>
+                <input type="text" id="birth-last-name" required
+                       pattern="[a-zA-Z\s\.\'\-]{2,60}" title="Alphabetical characters only, minimum 2 letters"
+                       class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-emerald-500">
+              </div>
+            </div>
+
+            <!-- Citizen Card Photo Preview for Birth Registration -->
+            <div id="birth-photo-preview-card" class="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center gap-3">
+              <div class="relative w-14 h-16 rounded-lg border-2 border-[#D4AF37] overflow-hidden shadow-xs bg-slate-100 shrink-0">
+                <img id="birth-form-photo" src="/images/citizen_yumna.jpg" alt="Child Photo" class="w-full h-full object-cover">
+              </div>
+              <div class="text-xs">
+                <span class="text-[10px] uppercase font-black text-slate-500 block">Citizen Card Biometric Portrait</span>
+                <span id="birth-form-photo-label" class="font-bold text-slate-800">Female Portrait Assigned</span>
+                <p class="text-[10px] text-slate-500 font-medium">Auto-updates based on Child's Gender selection</p>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-3">
+              <div>
+                <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Date of Birth <span class="text-rose-600">*</span></label>
+                <input type="date" id="birth-dob" required
+                       class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-emerald-500">
+              </div>
+              <div>
+                <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Gender <span class="text-rose-600">*</span></label>
+                <select id="birth-gender" onchange="onBirthGenderChange(this.value)" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-emerald-500">
+                  <option value="FEMALE">Female</option>
+                  <option value="MALE">Male</option>
+                  <option value="OTHER">Other</option>
+                </select>
+              </div>
+              <div>
+                <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Blood Group</label>
+                <select id="birth-blood" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-emerald-500">
+                  <option value="O+">O+</option>
+                  <option value="O-">O-</option>
+                  <option value="A+">A+</option>
+                  <option value="A-">A-</option>
+                  <option value="B+">B+</option>
+                  <option value="B-">B-</option>
+                  <option value="AB+">AB+</option>
+                  <option value="AB-">AB-</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Place of Birth (City/Town) <span class="text-rose-600">*</span></label>
+                <input type="text" id="birth-place" required
+                       class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-emerald-500">
+              </div>
+              <div>
+                <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Hospital / Clinic Facility</label>
+                <input type="text" id="birth-hospital"
+                       class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-emerald-500">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Mother's Citizen ID or NIC</label>
+                <input type="text" id="birth-mother-id"
+                       class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-emerald-500">
+              </div>
+              <div>
+                <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Father's Citizen ID or NIC</label>
+                <input type="text" id="birth-father-id"
+                       class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-emerald-500">
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Informant's Full Name &amp; Relationship</label>
+              <input type="text" id="birth-informant"
+                     class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-emerald-500">
+            </div>
+
+            <div class="pt-3 flex justify-end gap-2.5">
+              <button type="button" onclick="switchView('view-vital')" class="px-4 py-2 bg-slate-200 text-slate-800 rounded-xl font-bold">Back to Records</button>
+              <button type="submit" id="btn-submit-birth" class="btn-sl-green text-white px-6 py-2.5 rounded-xl font-black shadow flex items-center gap-2">
+                <i class="fa-solid fa-stamp text-amber-300"></i> Register Child &amp; Issue Digital Identity
+              </button>
+            </div>
+          </form>
+
+          <!-- Success Certificate Display Container -->
+          <div id="new-birth-result-container" class="hidden mt-6"></div>
+        </div>
+      </section>
+
+      <!-- VIEW: Admin National Core Registry &amp; Deletion Console -->
+      <section id="view-admin-registry" class="hidden space-y-6">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+          
+          <!-- Top Master Mode Switcher: Option 1 (View Details) vs Option 2 (Delete Records) -->
+          <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6 p-3 bg-slate-100 rounded-2xl border border-slate-300">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-[11px] font-black uppercase text-slate-700 tracking-wider mr-2 hidden sm:inline">Admin Mode:</span>
+              <button type="button" id="btn-admin-mode-view" onclick="setAdminConsoleMode('VIEW')"
+                      class="px-4 py-2.5 rounded-xl text-xs font-black transition flex items-center gap-2 bg-[#8D153A] text-white shadow-sm">
+                <i class="fa-solid fa-eye text-amber-300"></i>
+                <span>Option 1: View Sector Details</span>
+              </button>
+              <button type="button" id="btn-admin-mode-delete" onclick="setAdminConsoleMode('DELETE')"
+                      class="px-4 py-2.5 rounded-xl text-xs font-black transition flex items-center gap-2 bg-white text-rose-800 border border-rose-300 hover:bg-rose-50">
+                <i class="fa-solid fa-trash-can text-rose-600"></i>
+                <span>Option 2: Delete Sector Records</span>
+              </button>
+            </div>
+            <div class="flex items-center gap-2 self-end lg:self-auto">
+              <button type="button" onclick="loadAdminRegistryData()" class="bg-white hover:bg-slate-50 text-slate-800 text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 border border-slate-300 shadow-sm">
+                <i class="fa-solid fa-rotate text-[#8D153A]"></i> Refresh Records
+              </button>
+            </div>
+          </div>
+
+          <!-- Dynamic Header &amp; Context Banner -->
+          <div id="admin-mode-banner-container" class="mb-6">
+            <!-- View Mode Banner (Default) -->
+            <div id="admin-banner-view" class="p-4 rounded-2xl bg-rose-50/70 border border-rose-200">
+              <div class="flex items-center gap-2">
+                <span class="text-[10px] tracking-wider text-[#8D153A] font-extrabold uppercase px-2 py-0.5 bg-white border border-rose-200 rounded">
+                  National Administrative Inspection Console
+                </span>
+                <span class="text-[10px] font-bold text-slate-600">Option 1: Read &amp; Details Verification</span>
+              </div>
+              <h3 class="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-2 mt-1">
+                <i class="fa-solid fa-eye text-[#8D153A]"></i> National Sector Records &amp; Details Viewer
+              </h3>
+              <p class="text-xs text-slate-700 font-semibold mt-1">
+                Browse, search, and inspect complete verified attributes across all 7 national authorities: Citizens, Schools, Hospitals, Universities, Police, Immigration &amp; Civil Registrars.
+              </p>
+            </div>
+
+            <!-- Delete Mode Banner (Shown when DELETE mode is selected) -->
+            <div id="admin-banner-delete" class="hidden p-4 rounded-2xl bg-rose-100/80 border-2 border-rose-400">
+              <div class="flex items-center gap-2">
+                <span class="text-[10px] tracking-wider text-rose-950 font-black uppercase px-2 py-0.5 bg-rose-200 border border-rose-400 rounded">
+                  ⚠️ High-Privilege Purge Authorization
+                </span>
+                <span class="text-[10px] font-extrabold text-rose-900">Option 2: Permanent Record Deletion Hub</span>
+              </div>
+              <h3 class="text-xl sm:text-2xl font-black text-rose-950 flex items-center gap-2 mt-1">
+                <i class="fa-solid fa-triangle-exclamation text-rose-600"></i> National Record Deletion &amp; Purge Authority
+              </h3>
+              <p class="text-xs text-rose-900 font-semibold mt-1">
+                Select and permanently delete records from central databases. All deletion operations cascade to linked sub-records and are permanently logged to the National Audit Trail.
+              </p>
+            </div>
+          </div>
+
+          <!-- Quick Sector Stat Summary Cards (7 Sectors) -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5 mb-6 text-xs">
+            <button type="button" onclick="switchAdminSector('citizens')" id="card-stat-citizens" class="p-3 rounded-xl border border-rose-300 bg-rose-50 text-left transition hover:shadow-sm">
+              <span class="text-[10px] font-black text-[#8D153A] uppercase block">Citizens</span>
+              <span id="count-stat-citizens" class="text-lg font-black font-mono text-[#8D153A]">0</span>
+            </button>
+            <button type="button" onclick="switchAdminSector('school')" id="card-stat-school" class="p-3 rounded-xl border border-amber-200 bg-amber-50 text-left transition hover:shadow-sm">
+              <span class="text-[10px] font-black text-amber-900 uppercase block">School</span>
+              <span id="count-stat-school" class="text-lg font-black font-mono text-amber-700">0</span>
+            </button>
+            <button type="button" onclick="switchAdminSector('hospital')" id="card-stat-hospital" class="p-3 rounded-xl border border-red-200 bg-red-50 text-left transition hover:shadow-sm">
+              <span class="text-[10px] font-black text-red-800 uppercase block">Hospital</span>
+              <span id="count-stat-hospital" class="text-lg font-black font-mono text-red-700">0</span>
+            </button>
+            <button type="button" onclick="switchAdminSector('university')" id="card-stat-university" class="p-3 rounded-xl border border-purple-200 bg-purple-50 text-left transition hover:shadow-sm">
+              <span class="text-[10px] font-black text-purple-900 uppercase block">University</span>
+              <span id="count-stat-university" class="text-lg font-black font-mono text-purple-700">0</span>
+            </button>
+            <button type="button" onclick="switchAdminSector('police')" id="card-stat-police" class="p-3 rounded-xl border border-teal-200 bg-teal-50 text-left transition hover:shadow-sm">
+              <span class="text-[10px] font-black text-teal-900 uppercase block">Police</span>
+              <span id="count-stat-police" class="text-lg font-black font-mono text-teal-700">0</span>
+            </button>
+            <button type="button" onclick="switchAdminSector('immigration')" id="card-stat-immigration" class="p-3 rounded-xl border border-orange-200 bg-orange-50 text-left transition hover:shadow-sm">
+              <span class="text-[10px] font-black text-orange-900 uppercase block">Immigration</span>
+              <span id="count-stat-immigration" class="text-lg font-black font-mono text-orange-700">0</span>
+            </button>
+            <button type="button" onclick="switchAdminSector('registrar')" id="card-stat-registrar" class="p-3 rounded-xl border border-emerald-200 bg-emerald-50 text-left transition hover:shadow-sm">
+              <span class="text-[10px] font-black text-emerald-900 uppercase block">Registrar</span>
+              <span id="count-stat-registrar" class="text-lg font-black font-mono text-emerald-700">0</span>
+            </button>
+          </div>
+
+          <!-- 7 Sector Switcher Options / Buttons Bar -->
+          <div class="mb-6">
+            <div class="text-[11px] font-black uppercase text-slate-700 tracking-wider mb-2 flex items-center justify-between">
+              <span id="admin-sector-bar-title"><i class="fa-solid fa-layer-group text-[#8D153A] mr-1"></i> Select National Sector:</span>
+              <span class="text-[10px] font-bold text-slate-500">7 Connected Entities</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-2 p-2 bg-slate-100 rounded-2xl border border-slate-200" id="admin-sector-buttons-container">
+              <button type="button" onclick="switchAdminSector('citizens')" id="btn-sec-citizens" class="admin-sec-btn px-3.5 py-2 rounded-xl text-xs font-black transition flex items-center gap-1.5 bg-[#8D153A] text-white shadow-sm">
+                <i class="fa-solid fa-users"></i> <span id="label-sec-citizens">View Citizens</span>
+              </button>
+              <button type="button" onclick="switchAdminSector('school')" id="btn-sec-school" class="admin-sec-btn px-3.5 py-2 rounded-xl text-xs font-black transition flex items-center gap-1.5 bg-white text-slate-700 hover:bg-slate-200">
+                <i class="fa-solid fa-school text-amber-600"></i> <span id="label-sec-school">View School</span>
+              </button>
+              <button type="button" onclick="switchAdminSector('hospital')" id="btn-sec-hospital" class="admin-sec-btn px-3.5 py-2 rounded-xl text-xs font-black transition flex items-center gap-1.5 bg-white text-slate-700 hover:bg-slate-200">
+                <i class="fa-solid fa-hospital text-red-600"></i> <span id="label-sec-hospital">View Hospital</span>
+              </button>
+              <button type="button" onclick="switchAdminSector('university')" id="btn-sec-university" class="admin-sec-btn px-3.5 py-2 rounded-xl text-xs font-black transition flex items-center gap-1.5 bg-white text-slate-700 hover:bg-slate-200">
+                <i class="fa-solid fa-graduation-cap text-purple-600"></i> <span id="label-sec-university">View University</span>
+              </button>
+              <button type="button" onclick="switchAdminSector('police')" id="btn-sec-police" class="admin-sec-btn px-3.5 py-2 rounded-xl text-xs font-black transition flex items-center gap-1.5 bg-white text-slate-700 hover:bg-slate-200">
+                <i class="fa-solid fa-shield-halved text-teal-700"></i> <span id="label-sec-police">View Police</span>
+              </button>
+              <button type="button" onclick="switchAdminSector('immigration')" id="btn-sec-immigration" class="admin-sec-btn px-3.5 py-2 rounded-xl text-xs font-black transition flex items-center gap-1.5 bg-white text-slate-700 hover:bg-slate-200">
+                <i class="fa-solid fa-passport text-orange-600"></i> <span id="label-sec-immigration">View Immigration</span>
+              </button>
+              <button type="button" onclick="switchAdminSector('registrar')" id="btn-sec-registrar" class="admin-sec-btn px-3.5 py-2 rounded-xl text-xs font-black transition flex items-center gap-1.5 bg-white text-slate-700 hover:bg-slate-200">
+                <i class="fa-solid fa-stamp text-emerald-700"></i> <span id="label-sec-registrar">View Registrar</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Search &amp; Filter Controls -->
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-3 mb-4">
+            <div class="w-full sm:w-96 relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                <i class="fa-solid fa-magnifying-glass"></i>
+              </span>
+              <input type="text" id="admin-registry-search" oninput="debounceAdminRegistrySearch()"
+                     class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:bg-white focus:border-[#8D153A] focus:outline-none">
+            </div>
+            <div class="flex items-center gap-2">
+              <div class="text-xs font-black text-slate-800 flex items-center gap-2">
+                <span id="admin-sector-badge" class="px-2.5 py-1 bg-rose-50 text-[#8D153A] rounded-lg border border-rose-200 font-bold uppercase text-[10px]">Citizens Registry</span>
+                Total Entries: <span id="admin-registry-total-count" class="font-mono text-sm text-[#8D153A] font-black">0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic Registry Table -->
+          <div class="overflow-x-auto rounded-xl border border-slate-300 mb-4 bg-white" id="admin-table-container">
+            <table class="w-full text-xs text-left" id="admin-registry-table">
+              <thead id="admin-registry-thead" class="bg-slate-100 text-slate-900 uppercase font-black border-b-2 border-slate-300">
+                <!-- Dynamically Rendered -->
+              </thead>
+              <tbody id="admin-registry-tbody" class="divide-y divide-slate-200 font-sans text-slate-900 font-semibold">
+                <tr><td colspan="7" class="p-6 text-center text-slate-500 font-semibold">Loading registry entries...</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination Bar -->
+          <div class="flex justify-between items-center text-xs text-slate-700 font-bold">
+            <div>
+              Page <span id="admin-registry-page" class="font-black text-slate-900">1</span> of <span id="admin-registry-total-pages" class="font-black text-slate-900">1</span>
+            </div>
+            <div class="flex gap-2">
+              <button type="button" id="btn-admin-prev" onclick="changeAdminRegistryPage(-1)" class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-800 font-bold border border-slate-300 disabled:opacity-40">Previous</button>
+              <button type="button" id="btn-admin-next" onclick="changeAdminRegistryPage(1)" class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-800 font-bold border border-slate-300 disabled:opacity-40">Next</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 10: Admin Regulatory Audit Trail -->
+      <section id="view-admin-audit" class="hidden space-y-6">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
+            <div>
+              <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
+                <i class="fa-solid fa-shield-halved text-[#8D153A]"></i> Regulatory Audit &amp; Compliance Trail
+              </h3>
+              <p class="text-xs text-slate-700 font-semibold mt-1">Tamper-evident logs of every citizen record query, modification, and access event.</p>
+            </div>
+            <button type="button" onclick="loadAdminAuditLogs()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 border border-slate-300">
+              <i class="fa-solid fa-rotate"></i> Refresh Feed
+            </button>
+          </div>
+
+          <!-- Filters Bar -->
+          <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 mb-6 font-semibold">
+            <select id="audit-filter-action" onchange="loadAdminAuditLogs()" class="text-xs p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-bold">
+              <option value="">All Actions</option>
+              <option value="VIEW">VIEW</option>
+              <option value="CREATE">CREATE</option>
+              <option value="UPDATE">UPDATE</option>
+              <option value="DELETE">DELETE</option>
+              <option value="EXPORT">EXPORT</option>
+            </select>
+
+            <input type="text" id="audit-filter-module" oninput="debounceAuditSearch()"
+                   class="text-xs p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-semibold">
+
+            <input type="text" id="audit-filter-citizen" oninput="debounceAuditSearch()"
+                   class="text-xs p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-semibold">
+
+            <div class="text-xs font-black text-slate-800 flex items-center justify-end">
+              Total Logged: <span id="audit-total-count" class="font-mono text-base text-[#8D153A] ml-2 font-black">0</span>
+            </div>
+          </div>
+
+          <!-- Audit Logs Table with Sharp Dark Text -->
+          <div class="overflow-x-auto rounded-xl border border-slate-300 mb-4">
+            <table class="w-full text-xs text-left">
+              <thead class="bg-slate-100 text-slate-900 uppercase font-black border-b-2 border-slate-300">
+                <tr>
+                  <th class="p-3.5">Log ID</th>
+                  <th class="p-3.5">Timestamp</th>
+                  <th class="p-3.5">User &amp; Role</th>
+                  <th class="p-3.5">Action</th>
+                  <th class="p-3.5">Module Accessed</th>
+                  <th class="p-3.5">Target Citizen ID</th>
+                  <th class="p-3.5">IP Address</th>
+                </tr>
+              </thead>
+              <tbody id="table-audit-logs" class="divide-y divide-slate-200 font-mono text-slate-900 font-bold">
+                <tr><td colspan="7" class="p-4 text-center text-slate-600 font-sans font-bold">Loading audit trail...</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          <div class="flex justify-between items-center text-xs text-slate-700 font-bold">
+            <div>
+              Page <span id="audit-current-page" class="font-black text-slate-900">1</span> of <span id="audit-total-pages" class="font-black text-slate-900">1</span>
+            </div>
+            <div class="flex gap-2">
+              <button type="button" id="btn-audit-prev" onclick="changeAuditPage(-1)" class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-800 font-bold border border-slate-300 disabled:opacity-40">Previous</button>
+              <button type="button" id="btn-audit-next" onclick="changeAuditPage(1)" class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-800 font-bold border border-slate-300 disabled:opacity-40">Next</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 11: In-Dashboard QR Verification Tool -->
+      <section id="view-qr-verify" class="hidden space-y-6">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 max-w-2xl mx-auto text-center">
+          <div class="w-14 h-14 rounded-2xl bg-amber-50 border-2 border-amber-300 text-[#8D153A] mx-auto flex items-center justify-center text-2xl mb-4 shadow-sm">
+            <i class="fa-solid fa-qrcode"></i>
+          </div>
+          <h3 class="text-2xl font-black text-slate-900">Official In-Portal Verification</h3>
+          <p class="text-xs text-slate-700 font-semibold mb-6">Verify physical or digital citizen credentials directly using token, Citizen ID, or NIC.</p>
+
+          <div class="flex gap-2.5 mb-6">
+            <input type="text" id="dashboard-qr-input"
+                   onkeydown="if(event.key==='Enter') verifyDashboardToken()"
+                   class="flex-1 text-xs p-3.5 bg-slate-50 border-2 border-slate-300 rounded-xl font-semibold text-slate-900 focus:bg-white focus:border-[#8D153A]">
+            <button type="button" onclick="verifyDashboardToken()" class="btn-sl-maroon text-white text-xs font-black px-5 py-3.5 rounded-xl shadow">
+              Verify Token
+            </button>
+          </div>
+
+          <div id="dashboard-qr-result" class="hidden text-left"></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Modal: Upload Profile Picture -->
+  <div id="photo-upload-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm hidden">
+    <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md mx-4 overflow-hidden relative animate-in fade-in zoom-in-95 duration-200">
+      
+      <!-- Top Sri Lankan Ribbon -->
+      <div class="sl-ribbon-stripe-thin"></div>
+
+      <!-- Close Button -->
+      <button type="button" onclick="closePhotoUploadModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100 transition" aria-label="Close modal">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="p-6">
+        <div class="text-center mb-5">
+          <div class="w-14 h-14 rounded-2xl bg-amber-50 border border-amber-300 text-[#8D153A] flex items-center justify-center text-2xl mx-auto mb-3 shadow-sm">
+            <i class="fa-solid fa-camera"></i>
+          </div>
+          <h3 class="text-xl font-black text-slate-900">Official Profile Picture</h3>
+          <p class="text-xs text-slate-600 font-medium mt-1">Select an official identification portrait for the national digital citizen card.</p>
+        </div>
+
+        <form id="form-upload-photo" onsubmit="handlePhotoUpload(event)" class="space-y-4">
+          <!-- Target Citizen ID -->
+          <input type="hidden" id="photo-upload-target-citizen-id" value="">
+
+          <!-- Drag and Drop / Preview Box -->
+          <div id="photo-drop-zone" onclick="document.getElementById('photo-file-input').click()" 
+               class="border-2 border-dashed border-slate-300 hover:border-[#8D153A] rounded-2xl p-6 text-center cursor-pointer transition bg-slate-50 group flex flex-col items-center justify-center min-h-[190px]">
+            <input type="file" id="photo-file-input" accept="image/jpeg,image/png,image/webp,image/jpg" onchange="previewSelectedPhoto(event)" class="hidden">
+            
+            <div id="photo-preview-placeholder" class="flex flex-col items-center">
+              <div class="w-14 h-14 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-2xl mb-3 group-hover:bg-amber-100 group-hover:text-[#8D153A] transition">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+              </div>
+              <span class="text-xs font-black text-slate-900 block mb-1">Click to browse or drag &amp; drop</span>
+              <span class="text-[11px] text-slate-600 font-semibold block">PNG, JPG, or WebP (Max 10MB)</span>
+            </div>
+
+            <!-- Live Image Preview -->
+            <div id="photo-preview-container" class="hidden flex flex-col items-center">
+              <div class="w-28 h-32 rounded-xl overflow-hidden border-2 border-[#FFBE29] shadow-md mb-2 bg-slate-900">
+                <img id="photo-preview-img" src="" class="w-full h-full object-cover" alt="Preview">
+              </div>
+              <span class="text-[11px] font-bold text-[#8D153A] hover:underline">Click to change selected image</span>
+            </div>
+          </div>
+
+          <div id="photo-upload-error" class="hidden p-3 bg-red-50 border border-red-300 text-red-800 text-xs rounded-lg font-bold"></div>
+
+          <div class="flex items-center justify-end gap-3 pt-2">
+            <button type="button" onclick="closePhotoUploadModal()" class="px-4 py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition">
+              Cancel
+            </button>
+            <button type="submit" id="btn-submit-photo" class="px-5 py-2 text-xs font-black text-white btn-sl-green rounded-xl shadow transition flex items-center gap-2">
+              <i class="fa-solid fa-check text-amber-300"></i> Save Profile Picture
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Add Passport Details -->
+  <div id="modal-add-passport" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm hidden">
+    <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-lg mx-4 overflow-hidden relative animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
+      <div class="sl-ribbon-stripe-thin"></div>
+      <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-amber-50/60">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-[#8D153A] text-amber-300 flex items-center justify-center text-lg font-bold shadow-sm">
+            <i class="fa-solid fa-passport"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-black text-slate-900">Add Passport Details</h3>
+            <span class="text-[11px] text-slate-600 font-semibold">Department of Immigration and Emigration</span>
+          </div>
+        </div>
+        <button type="button" onclick="closeAddPassportModal()" class="text-slate-400 hover:text-slate-700 text-lg w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-200 transition" aria-label="Close modal">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="p-6 overflow-y-auto space-y-4 text-xs font-semibold">
+        <form id="form-add-passport" onsubmit="handleAddPassportSubmit(event)" class="space-y-4">
+          <input type="hidden" id="pass-citizen-id" value="">
+
+          <div>
+            <label class="block font-black text-slate-900 mb-1">Passport Number <span class="text-rose-600">*</span></label>
+            <input type="text" id="pass-number" required class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-mono font-bold text-slate-900 uppercase focus:bg-white focus:border-[#8D153A] focus:outline-none">
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block font-black text-slate-900 mb-1">Date of Issue <span class="text-rose-600">*</span></label>
+              <input type="date" id="pass-issue-date" required class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-bold text-slate-900 focus:bg-white focus:border-[#8D153A] focus:outline-none">
+            </div>
+            <div>
+              <label class="block font-black text-slate-900 mb-1">Date of Expiry <span class="text-rose-600">*</span></label>
+              <input type="date" id="pass-expiry-date" required class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-bold text-slate-900 focus:bg-white focus:border-[#8D153A] focus:outline-none">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block font-black text-slate-900 mb-1">Issuing Country</label>
+              <input type="text" id="pass-country" value="SRI LANKA" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-bold text-slate-900 uppercase focus:bg-white focus:border-[#8D153A] focus:outline-none">
+            </div>
+            <div>
+              <label class="block font-black text-slate-900 mb-1">Status</label>
+              <select id="pass-status" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-bold text-slate-900 focus:bg-white focus:border-[#8D153A] focus:outline-none">
+                <option value="ACTIVE">ACTIVE</option>
+                <option value="EXPIRED">EXPIRED</option>
+                <option value="CANCELLED">CANCELLED</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="add-passport-error" class="hidden p-3 bg-rose-50 border border-rose-300 text-rose-800 text-xs rounded-lg font-bold"></div>
+
+          <div class="flex items-center justify-end gap-3 pt-2">
+            <button type="button" onclick="closeAddPassportModal()" class="px-4 py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition">
+              Cancel
+            </button>
+            <button type="submit" id="btn-submit-passport" class="px-5 py-2 text-xs font-black text-white btn-sl-maroon rounded-xl shadow transition flex items-center gap-2">
+              <i class="fa-solid fa-check text-amber-300"></i> Save Passport Details
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Add Driving Licence Details -->
+  <div id="modal-add-licence" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm hidden">
+    <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-lg mx-4 overflow-hidden relative animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
+      <div class="sl-ribbon-stripe-thin"></div>
+      <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-emerald-50/60">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-[#00534E] text-amber-300 flex items-center justify-center text-lg font-bold shadow-sm">
+            <i class="fa-solid fa-id-badge"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-black text-slate-900">Add Driving Licence Details</h3>
+            <span class="text-[11px] text-slate-600 font-semibold">Department of Motor Traffic</span>
+          </div>
+        </div>
+        <button type="button" onclick="closeAddLicenceModal()" class="text-slate-400 hover:text-slate-700 text-lg w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-200 transition" aria-label="Close modal">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="p-6 overflow-y-auto space-y-4 text-xs font-semibold">
+        <form id="form-add-licence" onsubmit="handleAddLicenceSubmit(event)" class="space-y-4">
+          <input type="hidden" id="lic-citizen-id" value="">
+
+          <div>
+            <label class="block font-black text-slate-900 mb-1">Licence Number <span class="text-rose-600">*</span></label>
+            <input type="text" id="lic-number" required class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-mono font-bold text-slate-900 uppercase focus:bg-white focus:border-[#00534E] focus:outline-none">
+          </div>
+
+          <div>
+            <label class="block font-black text-slate-900 mb-1">Permitted Vehicle Classes <span class="text-rose-600">*</span></label>
+            <input type="text" id="lic-vehicle-classes" required class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-bold text-slate-900 focus:bg-white focus:border-[#00534E] focus:outline-none">
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block font-black text-slate-900 mb-1">Issue Date <span class="text-rose-600">*</span></label>
+              <input type="date" id="lic-issue-date" required class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-bold text-slate-900 focus:bg-white focus:border-[#00534E] focus:outline-none">
+            </div>
+            <div>
+              <label class="block font-black text-slate-900 mb-1">Expiry Date <span class="text-rose-600">*</span></label>
+              <input type="date" id="lic-expiry-date" required class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-bold text-slate-900 focus:bg-white focus:border-[#00534E] focus:outline-none">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block font-black text-slate-900 mb-1">Demerit Points</label>
+              <input type="number" id="lic-demerit-points" min="0" value="0" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-bold text-slate-900 focus:bg-white focus:border-[#00534E] focus:outline-none">
+            </div>
+            <div>
+              <label class="block font-black text-slate-900 mb-1">Licence Status</label>
+              <select id="lic-status" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-bold text-slate-900 focus:bg-white focus:border-[#00534E] focus:outline-none">
+                <option value="VALID">VALID</option>
+                <option value="SUSPENDED">SUSPENDED</option>
+                <option value="EXPIRED">EXPIRED</option>
+                <option value="REVOKED">REVOKED</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="add-licence-error" class="hidden p-3 bg-rose-50 border border-rose-300 text-rose-800 text-xs rounded-lg font-bold"></div>
+
+          <div class="flex items-center justify-end gap-3 pt-2">
+            <button type="button" onclick="closeAddLicenceModal()" class="px-4 py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition">
+              Cancel
+            </button>
+            <button type="submit" id="btn-submit-licence" class="px-5 py-2 text-xs font-black text-white btn-sl-green rounded-xl shadow transition flex items-center gap-2">
+              <i class="fa-solid fa-check text-amber-300"></i> Save Licence Details
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Add Civil Marriage Record -->
+  <div id="modal-add-marriage" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm hidden">
+    <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-lg mx-4 overflow-hidden relative animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
+      <div class="sl-ribbon-stripe-thin"></div>
+      <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-amber-50/60">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-amber-600 text-white flex items-center justify-center text-lg font-bold shadow-sm">
+            <i class="fa-solid fa-ring"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-black text-slate-900">Add Marriage Registration Record</h3>
+            <span class="text-[11px] text-slate-600 font-semibold">Registrar General's Department - Civil Registry</span>
+          </div>
+        </div>
+        <button type="button" onclick="closeAddMarriageModal()" class="text-slate-400 hover:text-slate-700 text-lg w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-200 transition" aria-label="Close modal">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="p-6 overflow-y-auto space-y-4 text-xs font-semibold">
+        <form id="form-add-marriage" onsubmit="handleAddMarriageSubmit(event)" class="space-y-4">
+          <input type="hidden" id="marriage-spouse-one-id" value="">
+
+          <div>
+            <label class="block font-black text-slate-900 mb-1">Marriage Certificate Number</label>
+            <input type="text" id="marriage-cert-num" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-mono font-bold text-slate-900 uppercase focus:bg-white focus:border-[#8D153A] focus:outline-none">
+          </div>
+
+          <div>
+            <label class="block font-black text-slate-900 mb-1">Spouse Citizen ID or NIC <span class="text-rose-600">*</span></label>
+            <input type="text" id="marriage-spouse-two-id" required class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-bold text-slate-900 focus:bg-white focus:border-[#8D153A] focus:outline-none">
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block font-black text-slate-900 mb-1">Date of Marriage <span class="text-rose-600">*</span></label>
+              <input type="date" id="marriage-date" required class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-bold text-slate-900 focus:bg-white focus:border-[#8D153A] focus:outline-none">
+            </div>
+            <div>
+              <label class="block font-black text-slate-900 mb-1">Status</label>
+              <select id="marriage-status" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-bold text-slate-900 focus:bg-white focus:border-[#8D153A] focus:outline-none">
+                <option value="ACTIVE">ACTIVE</option>
+                <option value="DISSOLVED">DISSOLVED</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block font-black text-slate-900 mb-1">Registration Place / Divisional Secretariat <span class="text-rose-600">*</span></label>
+            <input type="text" id="marriage-place" required class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-bold text-slate-900 focus:bg-white focus:border-[#8D153A] focus:outline-none">
+          </div>
+
+          <div id="add-marriage-error" class="hidden p-3 bg-rose-50 border border-rose-300 text-rose-800 text-xs rounded-lg font-bold"></div>
+
+          <div class="flex items-center justify-end gap-3 pt-2">
+            <button type="button" onclick="closeAddMarriageModal()" class="px-4 py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition">
+              Cancel
+            </button>
+            <button type="submit" id="btn-submit-marriage" class="px-5 py-2 text-xs font-black text-white btn-sl-green rounded-xl shadow transition flex items-center gap-2">
+              <i class="fa-solid fa-check text-amber-300"></i> Save Marriage Record
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Edit Citizen Information -->
+  <div id="edit-citizen-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm hidden">
+    <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-lg mx-4 overflow-hidden relative animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
+      
+      <!-- Top Sri Lankan Ribbon -->
+      <div class="sl-ribbon-stripe-thin"></div>
+
+      <!-- Modal Header -->
+      <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-amber-50/60">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center text-lg font-bold shadow-sm">
+            <i class="fa-solid fa-user-pen"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-black text-slate-900">Edit Citizen Information</h3>
+            <span class="text-[11px] text-slate-600 font-semibold">Update contact and residential records (Admin authorized)</span>
+          </div>
+        </div>
+        <button type="button" onclick="closeEditCitizenModal()" class="text-slate-400 hover:text-slate-700 text-lg w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-200 transition" aria-label="Close modal">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body (Scrollable) -->
+      <div class="p-6 overflow-y-auto space-y-4 text-xs font-semibold">
+        <form id="form-edit-citizen" onsubmit="handleEditCitizenSubmit(event)" class="space-y-4">
+          <input type="hidden" id="edit-citizen-id" value="">
+
+          <!-- Read-Only Identity Card Summary Header -->
+          <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between">
+            <div>
+              <span class="text-[10px] text-slate-500 block font-black uppercase tracking-wider">Citizen ID (Permanent)</span>
+              <span id="edit-display-citizen-id" class="font-mono font-black text-slate-900 text-xs">-</span>
+            </div>
+            <div>
+              <span class="text-[10px] text-slate-500 block font-black uppercase tracking-wider">NIC Number</span>
+              <span id="edit-display-nic" class="font-mono font-black text-slate-900 text-xs">-</span>
+            </div>
+          </div>
+
+          <!-- Name Fields -->
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block font-black text-slate-900 mb-1">First Name</label>
+              <input type="text" id="edit-first-name" class="w-full p-2.5 bg-slate-100 border border-slate-300 rounded-lg text-xs font-bold text-slate-900" readonly>
+            </div>
+            <div>
+              <label class="block font-black text-slate-900 mb-1">Last Name</label>
+              <input type="text" id="edit-last-name" class="w-full p-2.5 bg-slate-100 border border-slate-300 rounded-lg text-xs font-bold text-slate-900" readonly>
+            </div>
+          </div>
+
+          <!-- Contact Phone -->
+          <div>
+            <label class="block font-black text-slate-900 mb-1">Contact Phone Number <span class="text-rose-600">*</span></label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500">
+                <i class="fa-solid fa-phone"></i>
+              </span>
+              <input type="text" id="edit-contact-phone" required
+                     class="w-full pl-9 pr-3 py-2.5 bg-white border border-slate-300 rounded-lg text-xs text-slate-900 font-bold focus:border-[#8D153A] focus:outline-none">
+            </div>
+          </div>
+
+          <!-- Current Residential Address -->
+          <div>
+            <label class="block font-black text-slate-900 mb-1">Current Residential Address <span class="text-rose-600">*</span></label>
+            <textarea id="edit-current-address" rows="2" required
+                      class="w-full p-2.5 bg-white border border-slate-300 rounded-lg text-xs text-slate-900 font-semibold focus:border-[#8D153A] focus:outline-none"></textarea>
+          </div>
+
+          <!-- Permanent Address -->
+          <div>
+            <label class="block font-black text-slate-900 mb-1">Permanent Registered Address <span class="text-rose-600">*</span></label>
+            <textarea id="edit-permanent-address" rows="2" required
+                      class="w-full p-2.5 bg-white border border-slate-300 rounded-lg text-xs text-slate-900 font-semibold focus:border-[#8D153A] focus:outline-none"></textarea>
+          </div>
+
+          <!-- Blood Group -->
+          <div id="edit-blood-group-container">
+            <label class="block font-black text-slate-900 mb-1">Blood Group</label>
+            <select id="edit-blood-group" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg text-xs text-slate-900 font-bold focus:border-[#8D153A] focus:outline-none">
+              <option value="O+">O+</option>
+              <option value="O-">O-</option>
+              <option value="A+">A+</option>
+              <option value="A-">A-</option>
+              <option value="B+">B+</option>
+              <option value="B-">B-</option>
+              <option value="AB+">AB+</option>
+              <option value="AB-">AB-</option>
+            </select>
+          </div>
+
+          <div id="edit-citizen-error" class="hidden p-3 bg-rose-50 border border-rose-300 text-rose-800 text-xs rounded-lg font-bold"></div>
+
+          <!-- Actions -->
+          <div class="flex items-center justify-end gap-3 pt-2">
+            <button type="button" onclick="closeEditCitizenModal()" class="px-4 py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition">
+              Cancel
+            </button>
+            <button type="submit" id="btn-submit-edit-citizen" class="px-5 py-2 text-xs font-black text-white btn-sl-maroon rounded-xl shadow transition flex items-center gap-2">
+              <i class="fa-solid fa-check text-amber-300"></i> Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Delete / Clear Citizen Information -->
+  <div id="delete-citizen-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-200 animate-in fade-in zoom-in duration-150 flex flex-col max-h-[90vh]">
+      
+      <!-- Top Sri Lankan Ribbon -->
+      <div class="sl-ribbon-stripe-thin"></div>
+
+      <!-- Header -->
+      <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-rose-50">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-rose-600 text-white flex items-center justify-center shadow">
+            <i class="fa-solid fa-trash-can text-lg"></i>
+          </div>
+          <div>
+            <h3 class="font-black text-slate-900 text-sm">Delete / Clear Information</h3>
+            <span class="text-[11px] text-slate-600 font-bold">Manage profile details or statutory deactivation</span>
+          </div>
+        </div>
+        <button type="button" onclick="closeDeleteCitizenModal()" class="text-slate-400 hover:text-slate-700 text-lg w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-200 transition" aria-label="Close modal">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Body (Scrollable) -->
+      <div class="p-6 overflow-y-auto space-y-5 text-xs font-semibold">
+        <!-- Target Identity Header -->
+        <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between">
+          <div>
+            <span class="text-[10px] text-slate-500 block font-black uppercase tracking-wider">Citizen Record</span>
+            <span id="del-display-name" class="font-black text-slate-900 text-xs">Yumna Fathima Silva</span>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] text-slate-500 block font-black uppercase tracking-wider">Citizen ID</span>
+            <span id="del-display-id" class="font-mono font-black text-slate-900 text-xs">LK-19900512-0042</span>
+          </div>
+        </div>
+
+        <!-- Section 1: Granular Field Deletions -->
+        <div>
+          <h4 class="font-black text-slate-900 text-xs uppercase tracking-wider mb-2 flex items-center gap-1.5">
+            <i class="fa-solid fa-eraser text-amber-500"></i> Clear Specific Information
+          </h4>
+
+          <div class="space-y-2.5">
+            <!-- Delete Photo -->
+            <div class="p-3 border border-slate-200 rounded-xl flex items-center justify-between hover:bg-slate-50 transition">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center text-xs">
+                  <i class="fa-solid fa-user"></i>
+                </div>
+                <div>
+                  <span class="font-bold text-slate-900 block text-xs">Profile Photograph</span>
+                  <span id="del-photo-status" class="text-[11px] text-slate-600 font-semibold">Currently uploaded</span>
+                </div>
+              </div>
+              <button type="button" id="btn-delete-photo" onclick="handleDeleteProfilePhoto()" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 rounded-lg text-xs font-bold transition flex items-center gap-1.5">
+                <i class="fa-solid fa-trash-can text-[10px]"></i> Delete Photo
+              </button>
+            </div>
+
+            <!-- Clear Contact Phone -->
+            <div class="p-3 border border-slate-200 rounded-xl flex items-center justify-between hover:bg-slate-50 transition">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-sky-50 text-sky-700 border border-sky-200 flex items-center justify-center text-xs">
+                  <i class="fa-solid fa-phone"></i>
+                </div>
+                <div>
+                  <span class="font-bold text-slate-900 block text-xs">Contact Phone Number</span>
+                  <span id="del-phone-status" class="text-[11px] text-slate-600 font-mono font-bold">+94771234567</span>
+                </div>
+              </div>
+              <button type="button" id="btn-clear-phone" onclick="handleClearCitizenField('contact_phone')" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 rounded-lg text-xs font-bold transition flex items-center gap-1.5">
+                <i class="fa-solid fa-phone-slash text-[10px]"></i> Clear Phone
+              </button>
+            </div>
+
+            <!-- Clear Current Address -->
+            <div class="p-3 border border-slate-200 rounded-xl flex items-center justify-between hover:bg-slate-50 transition">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-200 flex items-center justify-center text-xs">
+                  <i class="fa-solid fa-location-dot"></i>
+                </div>
+                <div class="max-w-[200px] truncate">
+                  <span class="font-bold text-slate-900 block text-xs">Current Residence Address</span>
+                  <span id="del-address-status" class="text-[11px] text-slate-600 font-semibold truncate block">No. 42, Galle Road...</span>
+                </div>
+              </div>
+              <button type="button" id="btn-clear-address" onclick="handleClearCitizenField('current_address')" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 rounded-lg text-xs font-bold transition flex items-center gap-1.5">
+                <i class="fa-solid fa-house-chimney-crack text-[10px]"></i> Clear Address
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Danger Zone -->
+        <div class="pt-3 border-t border-slate-200">
+          <div class="p-4 bg-rose-50 border border-rose-200 rounded-xl space-y-3">
+            <div class="flex items-start gap-2.5">
+              <i class="fa-solid fa-triangle-exclamation text-rose-600 text-sm mt-0.5"></i>
+              <div>
+                <span class="font-black text-rose-950 text-xs block">Danger Zone: <span id="del-danger-title">Citizen Deactivation</span></span>
+                <span id="del-danger-desc" class="text-[11px] text-rose-800 font-semibold block mt-0.5 leading-relaxed">
+                  Deactivating this record will disable online portal access and clear voluntary contact information.
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-bold text-rose-950 mb-1">
+                To confirm this action, please type <span id="del-confirm-target" class="font-mono font-black text-rose-900 select-all">-</span> below:
+              </label>
+              <input type="text" id="del-confirm-input" oninput="checkDeleteConfirmationMatch()"
+                     class="w-full p-2 bg-white border-2 border-rose-300 rounded-lg text-xs font-mono font-bold text-slate-900 focus:border-rose-600 focus:outline-none">
+            </div>
+
+            <button type="button" id="btn-confirm-delete-record" type="button" onclick="handleDeleteCitizenRecord()" disabled
+                    class="w-full py-2.5 px-4 bg-rose-600 hover:bg-rose-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-black rounded-xl transition flex items-center justify-center gap-2 shadow">
+              <i class="fa-solid fa-trash-can"></i> <span id="del-btn-label">Confirm Deactivation</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="delete-citizen-error" class="hidden p-3 bg-rose-100 border border-rose-300 text-rose-900 text-xs rounded-lg font-bold"></div>
+      </div>
+
+      <!-- Footer -->
+      <div class="p-4 border-t border-slate-100 bg-slate-50 flex items-center justify-end">
+        <button type="button" onclick="closeDeleteCitizenModal()" class="px-4 py-2 text-xs font-bold text-slate-700 bg-white border border-slate-300 hover:bg-slate-100 rounded-xl transition">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Admin Record Full Details Inspection Modal -->
+  <div id="admin-record-details-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm hidden animate-in fade-in">
+    <div class="bg-white rounded-2xl max-w-2xl w-full mx-4 shadow-2xl border border-slate-300 overflow-hidden max-h-[90vh] flex flex-col">
+      <div class="p-5 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div id="rec-detail-icon" class="w-10 h-10 rounded-xl bg-[#8D153A] text-amber-300 flex items-center justify-center text-lg font-black shadow">
+            <i class="fa-solid fa-file-invoice"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span id="rec-detail-sector-badge" class="text-[10px] uppercase font-black px-2 py-0.5 rounded bg-rose-50 text-[#8D153A] border border-rose-200">SECTOR</span>
+              <span id="rec-detail-id-badge" class="text-[10px] font-mono font-bold text-slate-600">ID: #000</span>
+            </div>
+            <h3 id="rec-detail-title" class="text-base font-black text-slate-900 mt-0.5">Record Inspection Details</h3>
+          </div>
+        </div>
+        <button type="button" onclick="closeAdminRecordDetailsModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-200 transition">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="p-6 overflow-y-auto space-y-4 text-xs" id="rec-detail-body">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <div class="p-4 border-t border-slate-200 bg-slate-50 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <button type="button" id="btn-rec-detail-card" onclick="adminInspectCurrentRecordCitizen()" class="px-3.5 py-2 text-xs font-bold text-slate-800 bg-white border border-slate-300 hover:bg-slate-100 rounded-xl transition flex items-center gap-1.5 shadow-sm">
+            <i class="fa-solid fa-id-card text-[#8D153A]"></i> View Citizen Card
+          </button>
+          <button type="button" id="btn-rec-detail-switch-delete" onclick="adminDeleteFromDetailsModal()" class="px-3.5 py-2 text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-300 rounded-xl transition flex items-center gap-1.5">
+            <i class="fa-solid fa-trash-can text-rose-600"></i> Delete This Record
+          </button>
+        </div>
+        <button type="button" onclick="closeAdminRecordDetailsModal()" class="px-4 py-2 text-xs font-bold text-slate-700 bg-white border border-slate-300 hover:bg-slate-100 rounded-xl transition">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Admin Universal Record Deletion Modal -->
+  <div id="admin-delete-record-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm hidden animate-in fade-in">
+    <div class="bg-white rounded-2xl max-w-lg w-full mx-4 shadow-2xl border-2 border-rose-300 overflow-hidden">
+      <div class="p-6 border-b border-rose-100 bg-rose-50 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-rose-600 text-white flex items-center justify-center text-lg font-black shadow">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-black text-rose-950">Confirm Permanent Record Deletion</h3>
+            <p class="text-xs text-rose-800 font-bold">National Administrative Authority Action</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeAdminDeleteModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-rose-400 hover:text-rose-700 hover:bg-rose-100 transition">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="p-6 space-y-4">
+        <p class="text-xs text-slate-700 font-medium">
+          You are about to permanently delete this record from the national core database. This operation is audited and cannot be undone.
+        </p>
+
+        <div class="p-4 bg-slate-50 border border-slate-300 rounded-xl text-xs space-y-2">
+          <div class="flex justify-between items-center">
+            <span class="text-slate-500 font-bold uppercase text-[10px]">Sector:</span>
+            <span id="del-modal-sector" class="font-black text-[#8D153A] uppercase"></span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-slate-500 font-bold uppercase text-[10px]">Record ID / Item:</span>
+            <span id="del-modal-id" class="font-mono font-bold text-slate-900"></span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-slate-500 font-bold uppercase text-[10px]">Associated Citizen:</span>
+            <span id="del-modal-citizen" class="font-mono font-black text-[#8D153A]"></span>
+          </div>
+          <div class="pt-2 border-t border-slate-200 text-slate-800 font-semibold" id="del-modal-desc"></div>
+        </div>
+
+        <div class="p-3 bg-amber-50 border border-amber-300 text-amber-900 text-xs rounded-xl font-bold flex items-center gap-2">
+          <i class="fa-solid fa-shield-halved text-amber-700 text-sm"></i>
+          <span>This deletion will be permanently logged in the Regulatory Audit Trail.</span>
+        </div>
+
+        <div id="admin-delete-modal-error" class="hidden p-3 bg-rose-100 border border-rose-300 text-rose-900 text-xs rounded-xl font-bold"></div>
+      </div>
+
+      <div class="p-4 border-t border-slate-100 bg-slate-50 flex items-center justify-end gap-2.5">
+        <button type="button" onclick="closeAdminDeleteModal()" class="px-4 py-2 text-xs font-bold text-slate-700 bg-white border border-slate-300 hover:bg-slate-100 rounded-xl transition">
+          Cancel
+        </button>
+        <button type="button" id="btn-admin-confirm-delete" onclick="executeAdminDeleteRecord()" class="px-5 py-2 text-xs font-black text-white bg-rose-600 hover:bg-rose-700 rounded-xl transition flex items-center gap-2 shadow-md">
+          <i class="fa-solid fa-trash-can"></i> Confirm &amp; Permanently Delete
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Add Passport Details -->
+  <div id="modal-add-passport" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm hidden animate-in fade-in">
+    <div class="bg-white rounded-2xl max-w-lg w-full mx-4 shadow-2xl border border-slate-300 overflow-hidden">
+      <div class="p-5 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-[#8D153A] text-white flex items-center justify-center text-lg font-black shadow">
+            <i class="fa-solid fa-passport"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-black text-slate-900">Add Passport Details</h3>
+            <p class="text-xs text-slate-600 font-semibold">Immigration &amp; Emigration Travel Credential</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeAddPassportModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-200 transition">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="form-add-passport" onsubmit="handleAddPassportSubmit(event)" class="p-6 space-y-4 text-xs font-semibold">
+        <div>
+          <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Citizen ID</label>
+          <input type="text" id="pass-citizen-id" required
+                 class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-rose-500 font-mono font-bold">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Passport Number</label>
+            <input type="text" id="pass-number" required
+                   class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-rose-500 font-mono uppercase">
+          </div>
+          <div>
+            <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Issue Country</label>
+            <input type="text" id="pass-country" value="SRI LANKA" required
+                   class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-rose-500 font-bold">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Date of Issue</label>
+            <input type="date" id="pass-issue-date" required
+                   class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-rose-500">
+          </div>
+          <div>
+            <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Date of Expiry</label>
+            <input type="date" id="pass-expiry-date" required
+                   class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-rose-500">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Passport Status</label>
+          <select id="pass-status" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-rose-500">
+            <option value="ACTIVE">ACTIVE</option>
+            <option value="EXPIRED">EXPIRED</option>
+            <option value="CANCELLED">CANCELLED</option>
+          </select>
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2.5">
+          <button type="button" onclick="closeAddPassportModal()" class="px-4 py-2 text-xs font-bold text-slate-700 bg-white border border-slate-300 hover:bg-slate-100 rounded-xl transition">
+            Cancel
+          </button>
+          <button type="submit" class="btn-sl-maroon text-white px-5 py-2 text-xs font-black rounded-xl transition shadow flex items-center gap-2">
+            <i class="fa-solid fa-passport"></i> Save Passport Details
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Add Driving Licence Details -->
+  <div id="modal-add-licence" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm hidden animate-in fade-in">
+    <div class="bg-white rounded-2xl max-w-lg w-full mx-4 shadow-2xl border border-slate-300 overflow-hidden">
+      <div class="p-5 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-[#00534E] text-white flex items-center justify-center text-lg font-black shadow">
+            <i class="fa-solid fa-id-badge"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-black text-slate-900">Add Driving Licence Details</h3>
+            <p class="text-xs text-slate-600 font-semibold">Department of Motor Traffic Authorization</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeAddLicenceModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-200 transition">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="form-add-licence" onsubmit="handleAddLicenceSubmit(event)" class="p-6 space-y-4 text-xs font-semibold">
+        <div>
+          <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Citizen ID</label>
+          <input type="text" id="lic-citizen-id" required
+                 class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-emerald-500 font-mono font-bold">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Licence Number</label>
+            <input type="text" id="lic-number" required
+                   class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-emerald-500 font-mono uppercase">
+          </div>
+          <div>
+            <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Vehicle Classes</label>
+            <input type="text" id="lic-classes" required
+                   class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-emerald-500 font-bold uppercase">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Date of Issue</label>
+            <input type="date" id="lic-issue-date" required
+                   class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-emerald-500">
+          </div>
+          <div>
+            <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Date of Expiry</label>
+            <input type="date" id="lic-expiry-date" required
+                   class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-emerald-500">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Demerit Points</label>
+            <input type="number" id="lic-demerit-points" value="0" min="0" max="24"
+                   class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-emerald-500 font-bold">
+          </div>
+          <div>
+            <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Status</label>
+            <select id="lic-status" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-emerald-500">
+              <option value="VALID">VALID</option>
+              <option value="SUSPENDED">SUSPENDED</option>
+              <option value="EXPIRED">EXPIRED</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2.5">
+          <button type="button" onclick="closeAddLicenceModal()" class="px-4 py-2 text-xs font-bold text-slate-700 bg-white border border-slate-300 hover:bg-slate-100 rounded-xl transition">
+            Cancel
+          </button>
+          <button type="submit" class="btn-sl-green text-white px-5 py-2 text-xs font-black rounded-xl transition shadow flex items-center gap-2">
+            <i class="fa-solid fa-id-badge"></i> Save Licence Details
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Add Civil Marriage Record -->
+  <div id="modal-add-marriage" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm hidden animate-in fade-in">
+    <div class="bg-white rounded-2xl max-w-lg w-full mx-4 shadow-2xl border border-slate-300 overflow-hidden">
+      <div class="p-5 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-[#8D153A] text-amber-300 flex items-center justify-center text-lg font-black shadow">
+            <i class="fa-solid fa-heart"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-black text-slate-900">Add Marriage Record</h3>
+            <p class="text-xs text-slate-600 font-semibold">Registrar General's Civil Marriage Registry</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeAddMarriageModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-200 transition">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="form-add-marriage" onsubmit="handleAddMarriageSubmit(event)" class="p-6 space-y-4 text-xs font-semibold">
+        <div>
+          <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Spouse 1 Citizen ID (Applicant)</label>
+          <input type="text" id="marriage-spouse-one-id" required
+                 class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-rose-500 font-mono font-bold">
+        </div>
+
+        <div>
+          <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Spouse 2 Citizen ID or NIC</label>
+          <input type="text" id="marriage-spouse-two-id"
+                 class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-rose-500 font-mono font-bold">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Certificate Number</label>
+            <input type="text" id="marriage-certificate-no"
+                   class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-rose-500 font-mono uppercase">
+          </div>
+          <div>
+            <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Marriage Date</label>
+            <input type="date" id="marriage-date" required
+                   class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-rose-500">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Place of Registration / Division</label>
+          <input type="text" id="marriage-place" required
+                 class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-rose-500">
+        </div>
+
+        <div>
+          <label class="block font-black text-slate-900 uppercase tracking-wider mb-1">Status</label>
+          <select id="marriage-status" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:border-rose-500">
+            <option value="ACTIVE">ACTIVE</option>
+            <option value="DISSOLVED">DISSOLVED</option>
+          </select>
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2.5">
+          <button type="button" onclick="closeAddMarriageModal()" class="px-4 py-2 text-xs font-bold text-slate-700 bg-white border border-slate-300 hover:bg-slate-100 rounded-xl transition">
+            Cancel
+          </button>
+          <button type="submit" class="btn-sl-maroon text-white px-5 py-2 text-xs font-black rounded-xl transition shadow flex items-center gap-2">
+            <i class="fa-solid fa-stamp"></i> Register Marriage Record
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Dashboard JavaScript File -->
+  <script src="/js/app.js?v=2.3"></script>
+</body>
+</html>

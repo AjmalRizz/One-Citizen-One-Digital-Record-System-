@@ -1,0 +1,1424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OCODR - Democratic Socialist Republic of Sri Lanka | National Digital Citizen Identity Platform </title>
+  <meta name="description" content="Democratic Socialist Republic of Sri Lanka Unified Digital Citizen Identity and Record Management System with Zero-Trust Role-Based Access Control and Cryptographic Verification.">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- QR Code Generator &amp; Scanner CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  
+  <!-- Sri Lankan Theme &amp; Global Stylesheet -->
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="bg-white text-slate-900 antialiased flex flex-col min-h-screen">
+
+  <!-- Sri Lankan National Tricolor Top Ribbon -->
+  <div class="sl-ribbon-stripe"></div>
+
+  <!-- Top National Header Bar (Clean White with Sri Lankan Accents) -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      
+      <!-- Brand &amp; Emblem -->
+      <a href="/" class="flex items-center space-x-3.5 group">
+        <div class="w-12 h-12 rounded-xl p-1 bg-amber-50 border border-amber-300 flex items-center justify-center shadow-sm shrink-0 group-hover:scale-105 transition">
+          <img src="/images/sri_lanka_emblem.png" alt="Emblem of Sri Lanka" class="w-10 h-10 object-contain">
+        </div>
+        <div>
+          <div class="flex items-center gap-1.5">
+            <span class="text-[11px] tracking-wider text-[#8D153A] font-extrabold uppercase">
+              ශ්‍රී ලංකා • இலங்கை • Sri Lanka
+            </span>
+          </div>
+          <span class="text-lg sm:text-xl font-black tracking-tight text-slate-900 flex items-center gap-2">
+            OCODR <span class="text-xs bg-amber-100 text-amber-900 font-bold px-2 py-0.5 rounded border border-amber-300">National Identity Core</span>
+          </span>
+        </div>
+      </a>
+
+      <!-- Desktop Navigation Links &amp; Action Buttons -->
+      <nav class="hidden lg:flex items-center space-x-6 text-sm font-semibold text-slate-800">
+        <a href="#architecture" class="text-slate-800 hover:text-[#8D153A] transition py-1 border-b-2 border-transparent hover:border-[#8D153A]">Architecture</a>
+        <a href="#rbac" class="text-slate-800 hover:text-[#8D153A] transition py-1 border-b-2 border-transparent hover:border-[#8D153A]">RBAC Partitions</a>
+        <a href="#verify" class="text-slate-800 hover:text-[#8D153A] transition py-1 border-b-2 border-transparent hover:border-[#8D153A]">Public Trust &amp; QR</a>
+        <a href="#identity-card" class="text-slate-800 hover:text-[#8D153A] transition py-1 border-b-2 border-transparent hover:border-[#8D153A]">Citizen Card</a>
+      </nav>
+
+      <!-- Desktop Nav Actions (Dynamic based on login status) -->
+      <div id="desktop-nav-auth-container" class="hidden md:flex items-center space-x-3">
+        <!-- Logged out state buttons with Citizen / Child Dropdown -->
+        <div id="nav-guest-actions" class="flex items-center space-x-2.5">
+          <!-- Register Dropdown -->
+          <div class="relative auth-dropdown-container">
+            <button type="button" id="nav-register-btn" onclick="toggleAuthDropdown('nav-reg-dropdown')" class="btn-sl-green text-white text-xs px-3.5 py-2.5 rounded-xl font-bold transition flex items-center gap-1.5 shadow-sm">
+              <i class="fa-solid fa-user-plus text-amber-300"></i>
+              <span>Register</span>
+              <i class="fa-solid fa-chevron-down text-[10px] ml-0.5 opacity-80"></i>
+            </button>
+            <div id="nav-reg-dropdown" class="hidden absolute left-0 mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-slate-200 py-2 z-50 animate-in fade-in zoom-in-95">
+              <div class="px-3.5 py-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">Select Registration Form</div>
+              <button type="button" onclick="closeAllAuthDropdowns(); openRegisterModal('CITIZEN');" class="w-full px-3.5 py-2.5 text-left text-xs font-bold text-slate-800 hover:bg-rose-50 hover:text-[#8D153A] flex items-center gap-2.5 transition">
+                <div class="w-7 h-7 rounded-lg bg-rose-100 text-[#8D153A] flex items-center justify-center shrink-0"><i class="fa-solid fa-user"></i></div>
+                <div>
+                  <div class="font-black text-slate-900">Citizen Enrollment</div>
+                  <div class="text-[10px] text-slate-500 font-medium">Standard Adult Citizen Form</div>
+                </div>
+              </button>
+              <button type="button" onclick="closeAllAuthDropdowns(); openRegisterModal('CHILD');" class="w-full px-3.5 py-2.5 text-left text-xs font-bold text-slate-800 hover:bg-emerald-50 hover:text-[#00534E] flex items-center gap-2.5 transition">
+                <div class="w-7 h-7 rounded-lg bg-emerald-100 text-[#00534E] flex items-center justify-center shrink-0"><i class="fa-solid fa-baby"></i></div>
+                <div>
+                  <div class="font-black text-slate-900">Child Registration</div>
+                  <div class="text-[10px] text-slate-500 font-medium">With Parents &amp; Birth Certificate</div>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Login Dropdown -->
+          <div class="relative auth-dropdown-container">
+            <button type="button" id="nav-login-btn" onclick="toggleAuthDropdown('nav-login-dropdown')" class="btn-sl-maroon text-white text-xs px-3.5 py-2.5 rounded-xl font-bold transition flex items-center gap-1.5 shadow-sm">
+              <i class="fa-solid fa-lock text-amber-300"></i>
+              <span>Login</span>
+              <i class="fa-solid fa-chevron-down text-[10px] ml-0.5 opacity-80"></i>
+            </button>
+            <div id="nav-login-dropdown" class="hidden absolute right-0 mt-2 w-72 bg-white rounded-2xl shadow-2xl border border-slate-200 py-2.5 z-50 animate-in fade-in zoom-in-95">
+              <div class="px-4 py-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">Sign In Category</div>
+              
+              <!-- Citizen Login Option -->
+              <button type="button" onclick="closeAllAuthDropdowns(); openLoginModal('CITIZEN');" class="w-full px-4 py-2.5 text-left text-xs font-bold text-slate-800 hover:bg-rose-50 hover:text-[#8D153A] flex items-center gap-3 transition">
+                <div class="w-8 h-8 rounded-xl bg-rose-100 text-[#8D153A] flex items-center justify-center shrink-0">
+                  <i class="fa-solid fa-user text-sm"></i>
+                </div>
+                <div>
+                  <div class="font-black text-slate-900 text-sm">Citizen</div>
+                  <div class="text-[11px] text-slate-500 font-medium">Adult Citizen Sign In (Username &amp; Password)</div>
+                </div>
+              </button>
+
+              <!-- Child Login Option -->
+              <button type="button" onclick="closeAllAuthDropdowns(); openLoginModal('CHILD');" class="w-full px-4 py-2.5 text-left text-xs font-bold text-slate-800 hover:bg-emerald-50 hover:text-[#00534E] flex items-center gap-3 transition">
+                <div class="w-8 h-8 rounded-xl bg-emerald-100 text-[#00534E] flex items-center justify-center shrink-0">
+                  <i class="fa-solid fa-baby text-sm"></i>
+                </div>
+                <div>
+                  <div class="font-black text-slate-900 text-sm">Child</div>
+                  <div class="text-[11px] text-slate-500 font-medium">Minor Pupil Student Sign In</div>
+                </div>
+              </button>
+
+              <!-- Other / Official Login Option -->
+              <button type="button" onclick="closeAllAuthDropdowns(); openLoginModal('OTHER');" class="w-full px-4 py-2.5 text-left text-xs font-bold text-slate-800 hover:bg-indigo-50 hover:text-indigo-800 flex items-center gap-3 transition">
+                <div class="w-8 h-8 rounded-xl bg-indigo-100 text-indigo-800 flex items-center justify-center shrink-0">
+                  <i class="fa-solid fa-building-shield text-sm"></i>
+                </div>
+                <div>
+                  <div class="font-black text-slate-900 text-sm">Other</div>
+                  <div class="text-[11px] text-slate-500 font-medium">Official / Department &amp; Staff Sign In</div>
+                </div>
+              </button>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Logged in state buttons (Hidden by default, updated by JS) -->
+        <div id="nav-user-actions" class="hidden flex items-center space-x-3">
+          <button type="button" onclick="goToDashboard()" class="btn-sl-maroon text-white text-xs px-4 py-2 rounded-xl font-bold transition flex items-center gap-2">
+            <i class="fa-solid fa-gauge text-amber-300"></i> My Dashboard
+          </a>
+          <button type="button" onclick="handleLogout()" class="text-xs bg-slate-100 hover:bg-rose-50 text-slate-700 hover:text-rose-700 border border-slate-300 px-3 py-2 rounded-xl font-bold transition flex items-center gap-1.5">
+            <i class="fa-solid fa-power-off"></i> Logout
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Hamburger Button -->
+      <div class="md:hidden flex items-center gap-2">
+        <button type="button" onclick="openLoginModal('CITIZEN')" class="btn-sl-maroon text-white px-2.5 py-1.5 rounded-lg text-xs font-bold">
+          Sign In
+        </button>
+        <button type="button" id="mobile-menu-btn" onclick="toggleMobileNav()" class="p-2 text-slate-800 hover:text-[#8D153A] border border-slate-300 rounded-lg" aria-label="Toggle Navigation">
+          <i class="fa-solid fa-bars text-lg"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Dropdown Navigation -->
+    <div id="mobile-nav-menu" class="hidden md:hidden bg-white border-b border-slate-200 px-4 pt-3 pb-5 space-y-3 shadow-lg">
+      <div class="flex flex-col space-y-2 text-sm font-semibold">
+        <a href="#architecture" onclick="toggleMobileNav()" class="p-2 hover:bg-slate-50 text-slate-900 rounded-lg">Architecture &amp; Security</a>
+        <a href="#rbac" onclick="toggleMobileNav()" class="p-2 hover:bg-slate-50 text-slate-900 rounded-lg">RBAC Partitions</a>
+        <a href="#verify" onclick="toggleMobileNav()" class="p-2 hover:bg-slate-50 text-slate-900 rounded-lg">Public Trust Infrastructure</a>
+        <a href="#identity-card" onclick="toggleMobileNav()" class="p-2 hover:bg-slate-50 text-slate-900 rounded-lg">Citizen Identity Card</a>
+      </div>
+      <div class="pt-3 border-t border-slate-200 flex flex-col gap-2">
+        <div class="text-[10px] font-black uppercase text-slate-400 px-1">Select Registration Category:</div>
+        <div class="grid grid-cols-2 gap-2">
+          <button type="button" onclick="toggleMobileNav(); openRegisterModal('CITIZEN');" class="btn-sl-green text-white py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm">
+            <i class="fa-solid fa-user"></i> Citizen
+          </button>
+          <button type="button" onclick="toggleMobileNav(); openRegisterModal('CHILD');" class="btn-sl-maroon text-white py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm">
+            <i class="fa-solid fa-baby text-amber-300"></i> Child (Birth)
+          </button>
+        </div>
+        <button type="button" onclick="toggleMobileNav(); openLoginModal('CITIZEN');" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-900 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 border border-slate-300">
+          <i class="fa-solid fa-lock text-[#8D153A]"></i> Sign In to National Portal
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section (White Background with Sri Lankan Gold/Maroon Aesthetics) -->
+  <section class="relative bg-gradient-to-b from-amber-50/50 via-white to-white text-slate-900 pt-14 pb-20 overflow-hidden border-b border-slate-100">
+    <!-- Subtle Gold &amp; Maroon Ambient Glow Accents -->
+    <div class="absolute top-0 right-1/4 w-96 h-96 bg-amber-200/20 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute top-10 left-10 w-96 h-96 bg-rose-200/20 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="text-center max-w-3xl mx-auto">
+        
+        <!-- National Operational Seal Badge -->
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs font-bold mb-6 shadow-sm">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse"></span>
+          <span>Democratic Socialist Republic of Sri Lanka &bull; National Digital Identity Core Operational</span>
+        </div>
+
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 mb-6 leading-tight">
+          One Citizen, <br class="hidden sm:inline">
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#8D153A] via-[#B81D4C] to-[#00534E]">
+            One Secure Digital Record.
+          </span>
+        </h1>
+
+        <p class="text-base sm:text-lg text-slate-700 font-medium mb-8 leading-relaxed max-w-2xl mx-auto">
+          Sri Lanka's centralized, zero-trust national identity infrastructure unifying civil status, healthcare records, academic qualifications, and travel documents under cryptographic citizen identity with strict role-based access isolation.
+        </p>
+
+        <!-- Main Action Buttons with Citizen / Child Dropdown -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3.5">
+          
+          <!-- Hero Register Button with Dropdown -->
+          <div class="relative w-full sm:w-auto auth-dropdown-container">
+            <button type="button" id="hero-register-btn" onclick="toggleAuthDropdown('hero-reg-dropdown')" class="w-full sm:w-auto btn-sl-green text-white px-7 py-3.5 rounded-xl font-bold shadow-md transition flex items-center justify-center gap-2.5">
+              <i class="fa-solid fa-user-plus text-amber-300"></i>
+              <span>Register</span>
+              <i class="fa-solid fa-chevron-down text-xs ml-0.5 opacity-80"></i>
+            </button>
+            <div id="hero-reg-dropdown" class="hidden absolute left-1/2 -translate-x-1/2 sm:left-0 sm:translate-x-0 mt-2 w-72 bg-white rounded-2xl shadow-2xl border border-slate-200 py-2.5 z-50 text-left animate-in fade-in zoom-in-95">
+              <div class="px-4 py-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">Select Registration Form</div>
+              <button type="button" onclick="closeAllAuthDropdowns(); openRegisterModal('CITIZEN');" class="w-full px-4 py-2.5 text-left text-xs font-bold text-slate-800 hover:bg-rose-50 hover:text-[#8D153A] flex items-center gap-3 transition">
+                <div class="w-9 h-9 rounded-xl bg-rose-100 text-[#8D153A] flex items-center justify-center shrink-0"><i class="fa-solid fa-user text-sm"></i></div>
+                <div>
+                  <div class="font-black text-slate-900 text-sm">Citizen</div>
+                  <div class="text-[11px] text-slate-500 font-medium">Standard Adult Citizen Registration</div>
+                </div>
+              </button>
+              <button type="button" onclick="closeAllAuthDropdowns(); openRegisterModal('CHILD');" class="w-full px-4 py-2.5 text-left text-xs font-bold text-slate-800 hover:bg-emerald-50 hover:text-[#00534E] flex items-center gap-3 transition">
+                <div class="w-9 h-9 rounded-xl bg-emerald-100 text-[#00534E] flex items-center justify-center shrink-0"><i class="fa-solid fa-baby text-sm"></i></div>
+                <div>
+                  <div class="font-black text-slate-900 text-sm">Child</div>
+                  <div class="text-[11px] text-slate-500 font-medium">With Parents &amp; Birth Certificate</div>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Hero Login Button with Dropdown -->
+          <div class="relative w-full sm:w-auto auth-dropdown-container">
+            <button type="button" id="hero-login-btn" onclick="toggleAuthDropdown('hero-login-dropdown')" class="w-full sm:w-auto btn-sl-maroon text-white px-7 py-3.5 rounded-xl font-bold shadow-md transition flex items-center justify-center gap-2.5">
+              <i class="fa-solid fa-lock text-amber-300"></i>
+              <span>Login</span>
+              <i class="fa-solid fa-chevron-down text-xs ml-0.5 opacity-80"></i>
+            </button>
+            <div id="hero-login-dropdown" class="hidden absolute left-1/2 -translate-x-1/2 sm:left-0 sm:translate-x-0 mt-2 w-72 bg-white rounded-2xl shadow-2xl border border-slate-200 py-2.5 z-50 text-left animate-in fade-in zoom-in-95">
+              <div class="px-4 py-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">Sign In Category</div>
+              
+              <!-- Citizen Login Option -->
+              <button type="button" onclick="closeAllAuthDropdowns(); openLoginModal('CITIZEN');" class="w-full px-4 py-2.5 text-left text-xs font-bold text-slate-800 hover:bg-rose-50 hover:text-[#8D153A] flex items-center gap-3 transition">
+                <div class="w-9 h-9 rounded-xl bg-rose-100 text-[#8D153A] flex items-center justify-center shrink-0">
+                  <i class="fa-solid fa-user text-sm"></i>
+                </div>
+                <div>
+                  <div class="font-black text-slate-900 text-sm">Citizen</div>
+                  <div class="text-[11px] text-slate-500 font-medium">Adult Citizen Sign In (Username &amp; Password)</div>
+                </div>
+              </button>
+
+              <!-- Child Login Option -->
+              <button type="button" onclick="closeAllAuthDropdowns(); openLoginModal('CHILD');" class="w-full px-4 py-2.5 text-left text-xs font-bold text-slate-800 hover:bg-emerald-50 hover:text-[#00534E] flex items-center gap-3 transition">
+                <div class="w-9 h-9 rounded-xl bg-emerald-100 text-[#00534E] flex items-center justify-center shrink-0">
+                  <i class="fa-solid fa-baby text-sm"></i>
+                </div>
+                <div>
+                  <div class="font-black text-slate-900 text-sm">Child</div>
+                  <div class="text-[11px] text-slate-500 font-medium">Minor Pupil Student Sign In</div>
+                </div>
+              </button>
+
+              <!-- Other / Official Login Option -->
+              <button type="button" onclick="closeAllAuthDropdowns(); openLoginModal('OTHER');" class="w-full px-4 py-2.5 text-left text-xs font-bold text-slate-800 hover:bg-indigo-50 hover:text-indigo-800 flex items-center gap-3 transition">
+                <div class="w-9 h-9 rounded-xl bg-indigo-100 text-indigo-800 flex items-center justify-center shrink-0">
+                  <i class="fa-solid fa-building-shield text-sm"></i>
+                </div>
+                <div>
+                  <div class="font-black text-slate-900 text-sm">Other</div>
+                  <div class="text-[11px] text-slate-500 font-medium">Official / Department &amp; Staff Sign In</div>
+                </div>
+              </button>
+
+            </div>
+          </div>
+
+          <a id="hero-verify-btn" href="#verify" class="w-full sm:w-auto bg-white hover:bg-slate-50 border-2 border-slate-300 hover:border-[#8D153A] text-slate-800 px-6 py-3.5 rounded-xl font-bold transition flex items-center justify-center gap-2 shadow-sm">
+            <i class="fa-solid fa-qrcode text-[#8D153A]"></i> Public Trust Verification
+          </a>
+        </div>
+
+        <!-- Quick Credentials Hint for Evaluators -->
+        <div class="mt-8 inline-flex items-center gap-2 text-xs bg-slate-50 border border-slate-200 px-4 py-2 rounded-xl text-slate-700">
+          <i class="fa-solid fa-circle-info text-[#8D153A]"></i>
+          <span>Testing? Use the <strong>Demo 1-Click Role Switcher</strong> inside the Sign In modal to test all 8 institutional roles instantly.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Architecture Section (Fixes broken href="#architecture") -->
+  <section id="architecture" class="py-16 bg-white border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <span class="text-xs font-extrabold text-[#8D153A] uppercase tracking-widest bg-rose-50 border border-rose-200 px-3 py-1 rounded-full">
+          National Digital Infrastructure
+        </span>
+        <h2 class="text-3xl font-black text-slate-900 mt-3">Architectural Principles of OCODR</h2>
+        <p class="text-slate-600 mt-2 text-sm font-medium">Built according to ISO/IEC 27001 guidelines and Sri Lanka Data Protection Act No. 9 of 2022.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition">
+          <div class="w-12 h-12 rounded-xl bg-[#8D153A] text-amber-300 flex items-center justify-center text-xl mb-4 shadow">
+            <i class="fa-solid fa-fingerprint"></i>
+          </div>
+          <h3 class="font-black text-lg text-slate-900 mb-2">Cryptographic Identity</h3>
+          <p class="text-xs text-slate-600 leading-relaxed font-medium">
+            Each citizen receives a deterministic, non-forgeable Citizen ID (LK-YYYYMMDD-XXXX) and cryptographic verification QR token.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition">
+          <div class="w-12 h-12 rounded-xl bg-[#00534E] text-white flex items-center justify-center text-xl mb-4 shadow">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <h3 class="font-black text-lg text-slate-900 mb-2">Zero-Trust Partitioning</h3>
+          <p class="text-xs text-slate-600 leading-relaxed font-medium">
+            Strict statutory boundary isolation ensures hospitals cannot access police files, and schools cannot view confidential health data.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition">
+          <div class="w-12 h-12 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center text-xl mb-4 shadow">
+            <i class="fa-solid fa-list-check"></i>
+          </div>
+          <h3 class="font-black text-lg text-slate-900 mb-2">Immutable Audit Trail</h3>
+          <p class="text-xs text-slate-600 leading-relaxed font-medium">
+            Every record view, document generation, and official credential access is logged with timestamp, user role, and IP signature.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition">
+          <div class="w-12 h-12 rounded-xl bg-indigo-700 text-white flex items-center justify-center text-xl mb-4 shadow">
+            <i class="fa-solid fa-building-columns"></i>
+          </div>
+          <h3 class="font-black text-lg text-slate-900 mb-2">Public Trust Portal</h3>
+          <p class="text-xs text-slate-600 leading-relaxed font-medium">
+            Enables instant public identity validation via QR code or ID without disclosing private health, legal, or financial records.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Role-Based Partitioning Section -->
+  <section id="rbac" class="py-16 bg-slate-50/60 border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <span class="text-xs font-extrabold text-[#00534E] uppercase tracking-widest bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
+          Statutory Access Control
+        </span>
+        <h2 class="text-3xl font-black text-slate-900 mt-3">Strict Role-Based Data Partitions</h2>
+        <p class="text-slate-600 mt-2 text-sm font-medium">Every department operates inside its lawful statutory enclave with 100% auditable logging.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Hospital Card -->
+        <div class="p-6 rounded-2xl border border-red-200 bg-white hover:shadow-md transition">
+          <div class="w-12 h-12 rounded-xl bg-red-600 text-white flex items-center justify-center text-xl mb-4 shadow-sm">
+            <i class="fa-solid fa-stethoscope"></i>
+          </div>
+          <h3 class="font-bold text-lg text-slate-900 mb-1">Ministry of Health / Hospitals</h3>
+          <span class="inline-block text-xs font-bold px-2 py-0.5 rounded bg-red-100 text-red-800 mb-3 border border-red-200">Role: HOSPITAL</span>
+          <p class="text-xs text-slate-700 mb-3 leading-relaxed font-medium">
+            Authorized to inspect and record clinical diagnoses, hospital treatments, allergies, and vaccination registries.
+          </p>
+          <div class="text-xs font-semibold text-red-700 flex items-center gap-1.5 pt-2 border-t border-red-100">
+            <i class="fa-solid fa-ban"></i> Excludes police, tax, education &amp; travel files
+          </div>
+        </div>
+
+        <!-- Education Card -->
+        <div class="p-6 rounded-2xl border border-amber-200 bg-white hover:shadow-md transition">
+          <div class="w-12 h-12 rounded-xl bg-amber-600 text-white flex items-center justify-center text-xl mb-4 shadow-sm">
+            <i class="fa-solid fa-graduation-cap"></i>
+          </div>
+          <h3 class="font-bold text-lg text-slate-900 mb-1">Schools &amp; Universities</h3>
+          <span class="inline-block text-xs font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800 mb-3 border border-amber-200">Role: SCHOOL / UNIVERSITY</span>
+          <p class="text-xs text-slate-700 mb-3 leading-relaxed font-medium">
+            Authorized to view and record school education, higher education degrees, and national GCE O/L &amp; A/L exam scores.
+          </p>
+          <div class="text-xs font-semibold text-amber-700 flex items-center gap-1.5 pt-2 border-t border-amber-100">
+            <i class="fa-solid fa-ban"></i> Excludes medical, tax, police &amp; passport files
+          </div>
+        </div>
+
+        <!-- Police / Immigration Card -->
+        <div class="p-6 rounded-2xl border border-teal-200 bg-white hover:shadow-md transition">
+          <div class="w-12 h-12 rounded-xl bg-[#00534E] text-white flex items-center justify-center text-xl mb-4 shadow-sm">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <h3 class="font-bold text-lg text-slate-900 mb-1">Police &amp; Immigration</h3>
+          <span class="inline-block text-xs font-bold px-2 py-0.5 rounded bg-teal-100 text-teal-800 mb-3 border border-teal-200">Role: POLICE / IMMIGRATION</span>
+          <p class="text-xs text-slate-700 mb-3 leading-relaxed font-medium">
+            Authorized to inspect national passports, driving licence validity, border clearances, and travel demerit points.
+          </p>
+          <div class="text-xs font-semibold text-teal-800 flex items-center gap-1.5 pt-2 border-t border-teal-100">
+            <i class="fa-solid fa-ban"></i> Excludes clinical diagnoses &amp; academic grades
+          </div>
+        </div>
+
+        <!-- Registrar General Card -->
+        <div class="p-6 rounded-2xl border border-[#8D153A]/30 bg-white hover:shadow-md transition">
+          <div class="w-12 h-12 rounded-xl bg-[#8D153A] text-amber-300 flex items-center justify-center text-xl mb-4 shadow-sm">
+            <i class="fa-solid fa-stamp"></i>
+          </div>
+          <h3 class="font-bold text-lg text-slate-900 mb-1">Registrar General's Dept</h3>
+          <span class="inline-block text-xs font-bold px-2 py-0.5 rounded bg-rose-100 text-[#8D153A] mb-3 border border-rose-200">Role: REGISTRAR</span>
+          <p class="text-xs text-slate-700 mb-3 leading-relaxed font-medium">
+            Vital civil registry: Register new births with instant cryptographic Citizen ID, parents linkage, and birth credential issue.
+          </p>
+          <div class="text-xs font-semibold text-[#8D153A] flex items-center gap-1.5 pt-2 border-t border-rose-100">
+            <i class="fa-solid fa-check"></i> Issues birth, marriage &amp; civil status records
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Citizen Identity Card Showcase Section -->
+  <section id="identity-card" class="py-16 bg-white border-b border-slate-200">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6">
+      <div class="text-center max-w-2xl mx-auto mb-10">
+        <span class="text-xs font-extrabold text-[#8D153A] uppercase tracking-widest bg-rose-50 border border-rose-200 px-3 py-1 rounded-full">
+          Official National Credential
+        </span>
+        <h2 class="text-3xl font-black text-slate-900 mt-3">Sri Lankan National Digital Citizen Identity</h2>
+        <p class="text-slate-600 mt-2 text-sm font-medium">
+          Featuring the official Sri Lankan State Emblem, Lion Crest, and cryptographic token verification.
+        </p>
+      </div>
+
+      <!-- Preview of National ID Card (Sri Lankan Theme) -->
+      <div id="preview-nic-section-wrapper" class="max-w-2xl mx-auto space-y-4 transition-all duration-300">
+        <!-- Card Controls -->
+        <div class="flex flex-wrap items-center justify-between gap-2 bg-white px-4 py-2.5 rounded-2xl border border-slate-200 shadow-sm text-xs font-bold">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-slate-500 font-extrabold uppercase text-[10px] tracking-wider">Inspect View:</span>
+            <button type="button" id="btn-preview-front" onclick="showPreviewFace('front')" class="px-3 py-1.5 rounded-xl bg-[#8D153A] text-white shadow-sm transition">
+              <i class="fa-solid fa-id-card mr-1"></i> Front Face (Identity &amp; Photo)
+            </button>
+            <button type="button" id="btn-preview-back" onclick="showPreviewFace('back')" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 transition">
+              <i class="fa-solid fa-location-dot text-amber-600 mr-1"></i> Back Face (Address &amp; QR)
+            </button>
+            <button type="button" id="btn-preview-dual" onclick="showPreviewFace('dual')" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 transition" title="Show Front and Back Face together">
+              <i class="fa-solid fa-columns mr-1"></i> Both Sides (Front &amp; Back)
+            </button>
+          </div>
+          <button type="button" onclick="togglePreviewFlip()" class="px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 font-black transition flex items-center gap-1.5 shadow-sm">
+            <i class="fa-solid fa-arrows-rotate text-amber-600"></i> Flip Card (3D)
+          </button>
+        </div>
+
+        <!-- Smart NIC 3D Flipper Container -->
+        <div id="preview-nic-container" class="smart-nic-container">
+          <div id="preview-nic-flipper" class="smart-nic-flipper">
+
+            <!-- 1. FRONT FACE (Exact Layout of Image 2) -->
+            <div id="preview-nic-front" class="smart-nic-face smart-nic-front p-5 sm:p-7 min-h-[340px]">
+              <div class="smart-nic-lion-watermark"></div>
+              <div class="smart-nic-lotus"></div>
+
+              <!-- Header -->
+              <div class="flex justify-between items-start border-b border-amber-900/15 pb-3 mb-4 relative z-10">
+                <div>
+                  <div class="flex items-center gap-2 text-slate-900">
+                    <span class="nic-header-si">ශ්‍රී ලංකා</span>
+                    <span class="text-slate-400 font-bold">&bull;</span>
+                    <span class="nic-header-ta">இலங்கை</span>
+                    <span class="text-slate-400 font-bold">&bull;</span>
+                    <span class="nic-header-en text-[#8D153A]">SRI LANKA (OCODR)</span>
+                  </div>
+                  <div class="text-[11px] font-black text-slate-800 tracking-tight mt-0.5">
+                    පුරවැසි හැඳුනුම්පත &bull; குடிமக்கள் அடையாள அட்டை &bull; CITIZEN IDENTITY CARD
+                  </div>
+                  <div class="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1">
+                    <div class="flex items-center gap-1.5">
+                      <span class="text-[10px] font-black text-slate-700">පුරවැසි අංකය / Citizen ID:</span>
+                      <span id="preview-card-citizen-id-header" class="font-mono text-sm sm:text-base font-black text-[#8D153A] tracking-wider">LK-20051102-0220</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 text-xs">
+                      <span class="text-[10px] font-bold text-slate-500">NIC No:</span>
+                      <span id="preview-card-nic-number" class="font-mono font-bold text-slate-900">200530702203</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="w-14 h-14 bg-white/80 rounded-xl border border-amber-300 flex items-center justify-center p-1 shrink-0 shadow-sm">
+                  <img src="/images/sri_lanka_emblem.png" alt="State Emblem of Sri Lanka" class="w-12 h-12 object-contain">
+                </div>
+              </div>
+
+              <!-- Body -->
+              <div class="grid grid-cols-1 sm:grid-cols-12 gap-5 items-center relative z-10">
+                <div class="sm:col-span-4 flex flex-col items-center">
+                  <div class="relative w-28 h-32 rounded-xl border-2 border-[#D4AF37] overflow-hidden shadow-md bg-slate-100 flex items-center justify-center">
+                    <img id="preview-card-photo" src="/images/citizen_bilaal.jpg" onerror="this.onerror=null; this.src='/images/citizen_yumna.jpg';" class="w-full h-full object-cover transition-opacity duration-300" alt="Citizen Photo">
+                  </div>
+                  <div class="mt-2 text-center w-full px-1">
+                    <div class="text-[9px] font-bold text-slate-600 leading-tight">
+                      Holder's Signature<br>
+                      <span class="text-[8px]">හිමිකරුගේ අත්සන / உரிமையாளரின் கையொப்பம்</span>
+                    </div>
+                    <div id="preview-card-signature" class="nic-signature mt-0.5 border-b border-slate-400 pb-0.5 text-center">
+                      Bilaal
+                    </div>
+                  </div>
+                </div>
+
+                <div class="sm:col-span-8 space-y-2.5 text-xs">
+                  <div>
+                    <span class="nic-field-label">නම / பெயர் / Name:</span>
+                    <div id="preview-card-name-si" class="font-bold text-slate-800 text-[11px]">වසීම් බාරි අහ්මද් බිලාල්</div>
+                    <div id="preview-card-name-ta" class="font-bold text-slate-800 text-[11px]">வசீம் பாரி அஹ்மத் பிலால்</div>
+                    <div id="preview-card-full-name" class="font-black text-slate-950 text-sm tracking-wide uppercase">WASIM BARI AHMADH BILAAL</div>
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-3 pt-1">
+                    <div>
+                      <span class="nic-field-label">ස්ත්‍රී පුරුෂ භාවය / பால் / Sex:</span>
+                      <span id="preview-card-gender-trilingual" class="nic-field-value text-slate-900 block">පුරුෂ / ஆண் / Male</span>
+                    </div>
+                    <div>
+                      <span class="nic-field-label">උපන් දිනය / பிறந்த திகதி / Date of Birth:</span>
+                      <span id="preview-card-dob" class="nic-field-value font-mono text-slate-900 block">2005/11/02</span>
+                    </div>
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-3 pt-1 border-t border-amber-900/10">
+                    <div>
+                      <span class="nic-field-label">Citizen ID</span>
+                      <span id="preview-card-citizen-id" class="font-mono font-bold text-xs text-[#8D153A]">LK-20051102-0220</span>
+                    </div>
+                    <div>
+                      <span class="nic-field-label">Blood Group</span>
+                      <span id="preview-card-blood-group" class="inline-block px-2 py-0.5 rounded bg-rose-100 border border-rose-300 text-rose-900 font-black text-xs">O+</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-4 pt-2 border-t border-amber-900/10 flex justify-between items-center text-[10px] text-slate-600 font-bold relative z-10">
+                <span>Democratic Socialist Republic of Sri Lanka &bull; OCODR National Identity System</span>
+                <span class="text-[#00534E] font-black"><i class="fa-solid fa-circle-check"></i> OFFICIAL CITIZEN RECORD ACTIVE</span>
+              </div>
+            </div>
+
+            <!-- 2. BACK FACE (Citizen Identity Card Back) -->
+            <div id="preview-nic-back" class="smart-nic-face smart-nic-back p-5 sm:p-7 min-h-[360px]">
+              <div class="smart-nic-drp-watermark"></div>
+
+              <!-- Back Header: Prominent Official Address Section -->
+              <div class="space-y-1.5 text-xs relative z-10 border-b border-amber-900/20 pb-3 mb-3 bg-amber-50/70 p-3 rounded-xl border border-amber-300/60 shadow-sm">
+                <div class="flex items-center justify-between border-b border-amber-900/10 pb-1.5 mb-1">
+                  <span class="inline-flex items-center gap-1.5 text-[10px] font-black text-[#8D153A] uppercase tracking-wider">
+                    <i class="fa-solid fa-location-dot text-rose-600"></i> ස්ථිර ලිපිනය / நிரந்தர முகவரி / REGISTERED RESIDENCE
+                  </span>
+                  <span class="text-[9px] font-extrabold text-emerald-800 bg-emerald-100/90 px-2 py-0.5 rounded border border-emerald-300">
+                    <i class="fa-solid fa-check-circle"></i> VERIFIED
+                  </span>
+                </div>
+                
+                <div class="leading-tight">
+                  <span class="font-black text-slate-900 text-[11px]">ලිපිනය:</span>
+                  <span id="preview-card-address-si" class="font-bold text-slate-800 ml-1.5 text-[11px]">186/C, පහල කොණ්ඩදෙණිය, කටුගස්තොට.</span>
+                </div>
+                <div class="leading-tight">
+                  <span class="font-black text-slate-900 text-[11px]">முகவரி:</span>
+                  <span id="preview-card-address-ta" class="font-bold text-slate-800 ml-1.5 text-[11px]">186/C, கீழ் கொண்டதெணிய, கட்டுகஸ்தோட்டை.</span>
+                </div>
+                <div class="leading-tight pt-1">
+                  <span class="font-black text-[#8D153A] text-xs">Address:</span>
+                  <span id="preview-card-address" class="font-black text-slate-950 uppercase ml-1.5 tracking-wide text-xs">186/C, PAHALA KONDADENIYA, KATUGASTOTA, SRI LANKA</span>
+                </div>
+              </div>
+
+              <!-- Birth Place -->
+              <div class="space-y-0.5 text-xs relative z-10 border-b border-amber-900/15 pb-2.5 mb-3">
+                <div class="flex items-center gap-3">
+                  <div>
+                    <span class="font-black text-slate-800">උපන් ස්ථානය :</span>
+                    <span class="font-semibold text-slate-900 ml-1">මහනුවර</span>
+                  </div>
+                  <div>
+                    <span class="font-black text-slate-800">பிறப்பிடம் :</span>
+                    <span class="font-semibold text-slate-900 ml-1">கண்டி</span>
+                  </div>
+                  <div>
+                    <span class="font-black text-slate-900">Birth Place :</span>
+                    <span class="font-bold text-slate-950 uppercase ml-1">KANDY</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- OCODR Framework Authority &amp; Registrar General Signature -->
+              <div class="grid grid-cols-12 gap-3 items-center relative z-10 border-b border-amber-900/15 pb-3 mb-3">
+                <div class="col-span-7 flex items-center gap-2.5">
+                  <span class="nic-drp-stamp shrink-0 text-[#8D153A]">OCODR</span>
+                  <div class="text-[9px] font-bold text-slate-700 leading-tight">
+                    එක් පුරවැසියෙක් එක් ඩිජිටල් වාර්තාවක් (OCODR) ජාතික පද්ධතිය<br>
+                    ஒரு குடிமகன் ஒரு டிஜிட்டல் பதிவு (OCODR) தேசிய கட்டமைப்பு<br>
+                    One Citizen One Digital Record System &bull; Democratic Socialist Republic of Sri Lanka
+                  </div>
+                </div>
+
+                <div class="col-span-5 text-right">
+                  <div class="nic-signature text-sm font-bold text-slate-900">Pradeep Saputhanthri</div>
+                  <div class="text-[8px] font-bold text-slate-600 leading-tight">
+                    ජාතික ඩිජිටල් රෙජිස්ට්‍රාර් ජනරාල්<br>
+                    National Digital Registrar General &bull; OCODR
+                  </div>
+                </div>
+              </div>
+
+              <!-- Bottom Row with QR -->
+              <div class="grid grid-cols-12 gap-3 items-end relative z-10">
+                <div class="col-span-8 space-y-1">
+                  <div class="flex items-center gap-4 text-[10px] font-bold text-slate-800">
+                    <div>Date of Issue: <span class="font-mono font-black text-slate-900">2025/01/27</span></div>
+                    <div>P 7U520032 - N</div>
+                  </div>
+                  <div class="flex items-center gap-4 text-[10px] font-bold text-slate-800">
+                    <div>Date of Expiry: <span class="font-mono font-black text-slate-900">2035/01/26</span></div>
+                    <div>Previous ID No:</div>
+                  </div>
+                  <div class="pt-1 flex items-baseline gap-2">
+                    <span class="text-[10px] uppercase font-bold text-slate-500">Citizen Card Serial:</span>
+                    <span class="nic-card-serial">05CBD-220</span>
+                  </div>
+                </div>
+
+                <div class="col-span-4 flex flex-col items-center justify-end">
+                  <div id="preview-card-qrcode" class="p-1 bg-white rounded-lg border border-slate-300 shadow-sm"></div>
+                  <span class="text-[9px] font-mono text-slate-600 font-bold mt-1 text-center">Citizen QR Code</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Public Trust Infrastructure &amp; QR Verification Section (Fixed Search bar &amp; 2 Buttons) -->
+  <section id="verify" class="py-16 bg-slate-50 border-b border-slate-200">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6">
+      
+      <div class="text-center mb-8">
+        <span class="inline-block bg-amber-100 text-amber-900 border border-amber-300 text-xs px-3.5 py-1 rounded-full font-black uppercase tracking-wider mb-2">
+          Public Trust Infrastructure
+        </span>
+        <h2 class="text-3xl font-black text-slate-900">Verify Official Citizen Credential</h2>
+        <p class="text-slate-600 text-sm mt-1 font-medium">
+          Authenticate citizen identity cryptographically by QR Token, Citizen ID, or National Identity Card (NIC).
+        </p>
+      </div>
+
+      <!-- Verification Input Box with Working Search Bar &amp; 2 Buttons -->
+      <div class="bg-white rounded-2xl shadow-xl border border-slate-300 overflow-hidden">
+        <div class="p-6 sm:p-8">
+          
+          <div class="flex flex-col sm:flex-row gap-3 mb-4">
+            <!-- Search Bar Input -->
+            <div class="relative flex-1">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-500">
+                <i class="fa-solid fa-magnifying-glass"></i>
+              </span>
+              <input type="text" id="public-qr-token-input" name="qr_token" 
+                     onkeydown="handlePublicInputKeydown(event)"
+                     class="w-full pl-10 pr-4 py-3.5 bg-slate-50 border-2 border-slate-300 rounded-xl text-sm font-semibold text-slate-900 focus:bg-white focus:border-[#8D153A] focus:outline-none transition">
+            </div>
+
+            <!-- Button 1: Verify Token -->
+            <button type="button" id="btn-verify-token" onclick="verifyPublicToken()" 
+                    class="btn-sl-maroon text-white font-bold px-6 py-3.5 rounded-xl transition flex items-center justify-center gap-2 shrink-0">
+              <i class="fa-solid fa-circle-check text-amber-300"></i> Verify Token
+            </button>
+
+            <!-- Button 2: Scan with Camera / Upload -->
+            <button type="button" id="btn-scan-qr" onclick="togglePublicScanner()" 
+                    class="btn-sl-green text-white font-bold px-5 py-3.5 rounded-xl transition flex items-center justify-center gap-2 shrink-0" 
+                    title="Scan QR with Camera or Image File">
+              <i class="fa-solid fa-camera text-amber-300"></i> Scan QR
+            </button>
+          </div>
+
+          <!-- Quick Test Demo Token Buttons -->
+          <div class="mb-6 flex flex-wrap items-center gap-2 text-xs">
+            <span class="font-bold text-slate-600">Quick Test Records:</span>
+            <button type="button" onclick="fillAndVerifyToken('LK-19900512-0042')" class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 font-bold transition">
+              <i class="fa-solid fa-id-card text-amber-600 mr-1"></i> Citizen ID: LK-19900512-0042
+            </button>
+            <button type="button" onclick="fillAndVerifyToken('199055401234')" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-900 border border-rose-300 font-bold transition">
+              <i class="fa-solid fa-address-card text-rose-600 mr-1"></i> NIC: 199055401234
+            </button>
+            <button type="button" onclick="fillAndVerifyToken('qr_token_lk_19900512_0042_secure_hash_v1')" class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-300 font-bold transition">
+              <i class="fa-solid fa-qrcode text-emerald-600 mr-1"></i> QR Token Hash
+            </button>
+          </div>
+
+          <!-- Camera &amp; File Scanner Container (Hidden by default) -->
+          <div id="scanner-wrapper" class="hidden mb-6 p-6 bg-slate-900 rounded-2xl text-center text-white">
+            <h4 class="font-bold text-sm text-amber-300 mb-3 flex items-center justify-center gap-2">
+              <i class="fa-solid fa-qrcode"></i> Scan Official QR Credential
+            </h4>
+            
+            <div id="reader" class="w-full max-w-sm mx-auto overflow-hidden rounded-xl bg-black"></div>
+            
+            <div class="mt-4 flex flex-col sm:flex-row items-center justify-center gap-3 text-xs">
+              <label for="public-qr-file-input" class="cursor-pointer bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-xl font-bold border border-slate-600 transition flex items-center gap-2">
+                <i class="fa-solid fa-upload text-amber-300"></i> Upload QR Image from Device
+                <input type="file" id="public-qr-file-input" name="qr_file" accept="image/*" class="hidden" onchange="scanQrFromFile(event)">
+              </label>
+              <button type="button" onclick="togglePublicScanner()" class="text-rose-300 hover:text-white font-bold underline px-3 py-1">
+                Close Scanner
+              </button>
+            </div>
+          </div>
+
+          <!-- Verification Result Display Panel -->
+          <div id="verification-result" class="hidden"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Login &amp; 2FA Modal -->
+  <div id="login-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm hidden">
+    <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md mx-4 overflow-hidden relative animate-in fade-in zoom-in-95 duration-200">
+      
+      <!-- Top Sri Lankan Ribbon -->
+      <div class="sl-ribbon-stripe-thin"></div>
+
+      <!-- Close Button -->
+      <button type="button" onclick="closeLoginModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100 transition" aria-label="Close modal">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <!-- Step 1: Username, Email &amp; Password -->
+      <div id="login-step-credentials" class="p-6 sm:p-8">
+        <div class="text-center mb-6">
+          <div class="w-14 h-14 bg-amber-50 border-2 border-amber-300 rounded-2xl flex items-center justify-center p-1.5 mx-auto mb-3 shadow-sm">
+            <img src="/images/sri_lanka_emblem.png" alt="Emblem" class="w-10 h-10 object-contain">
+          </div>
+          <h3 id="login-modal-title" class="text-2xl font-black text-slate-900">National Portal Login</h3>
+          <p class="text-xs text-slate-600 mt-1 font-medium">Enter your credentials to securely sign in directly to your dashboard.</p>
+        </div>
+
+        <!-- Login Category Switcher (Citizen, Child, Other) -->
+        <div class="mb-3 p-1.5 bg-slate-100 rounded-xl flex items-center gap-1 text-xs font-black">
+          <button type="button" id="login-cat-citizen" onclick="setLoginCategory('CITIZEN')" class="flex-1 py-1.5 rounded-lg bg-white text-[#8D153A] shadow-sm flex items-center justify-center gap-1.5 transition">
+            <i class="fa-solid fa-user"></i> Citizen
+          </button>
+          <button type="button" id="login-cat-child" onclick="setLoginCategory('CHILD')" class="flex-1 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 transition">
+            <i class="fa-solid fa-baby text-[#00534E]"></i> Child
+          </button>
+          <button type="button" id="login-cat-other" onclick="setLoginCategory('OTHER')" class="flex-1 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 transition">
+            <i class="fa-solid fa-building-shield text-indigo-700"></i> Other
+          </button>
+        </div>
+        <p id="login-category-desc" class="text-[11px] text-slate-600 font-semibold mb-3 text-center">
+          Sign in with your Sri Lankan National Citizen Account.
+        </p>
+
+        <form id="credentials-form" action="javascript:void(0);" method="post" onsubmit="handleCredentialsSubmit(event)" class="space-y-4">
+          <div>
+            <label for="login-username" class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1">Username / Email / National ID</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-500">
+                <i class="fa-solid fa-user"></i>
+              </span>
+              <input type="text" id="login-username" name="username" autocomplete="username" required
+                     class="w-full pl-10 pr-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-900 font-semibold focus:bg-white focus:border-[#8D153A] focus:outline-none">
+            </div>
+          </div>
+
+          <div>
+            <label for="login-email" class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1">Registered Email (Optional)</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-500">
+                <i class="fa-solid fa-envelope"></i>
+              </span>
+              <input type="email" id="login-email" name="email" autocomplete="email"
+                     class="w-full pl-10 pr-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-900 font-semibold focus:bg-white focus:border-[#8D153A] focus:outline-none">
+            </div>
+          </div>
+
+          <div>
+            <label for="login-password" class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1">Password</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-500">
+                <i class="fa-solid fa-lock"></i>
+              </span>
+              <input type="password" id="login-password" name="password" autocomplete="current-password" required
+                     class="w-full pl-10 pr-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-900 font-semibold focus:bg-white focus:border-[#8D153A] focus:outline-none">
+            </div>
+          </div>
+
+          <div id="login-error-msg" class="hidden p-3 bg-red-50 border border-red-300 text-red-800 text-xs rounded-lg font-bold"></div>
+
+          <button type="submit" id="btn-login-submit" class="w-full btn-sl-maroon text-white font-black py-3 rounded-xl shadow-md transition flex items-center justify-center gap-2">
+            <span>Sign In to Dashboard</span> <i class="fa-solid fa-arrow-right text-xs text-amber-300"></i>
+          </button>
+        </form>
+
+        <!-- Quick 1-Click Role Switcher Selector -->
+        <div class="mt-6 pt-5 border-t border-slate-200">
+          <span class="text-[11px] font-black text-slate-600 uppercase tracking-wider block mb-2 text-center">
+            Demo 1-Click Role Switcher (Pre-fills credentials)
+          </span>
+          <div class="grid grid-cols-2 gap-1.5 text-xs">
+            <button type="button" onclick="quickFill('citizen', 'citizen@ocodr.gov.lk', 'password123')" class="px-2 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-[#8D153A] font-bold text-left truncate border border-rose-200 transition">
+              <i class="fa-solid fa-user text-[#8D153A] mr-1"></i> Citizen
+            </button>
+            <button type="button" onclick="quickFill('doctor.perera', 'doctor@health.gov.lk', 'password123')" class="px-2 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-900 font-bold text-left truncate border border-red-200 transition">
+              <i class="fa-solid fa-stethoscope text-red-600 mr-1"></i> Hospital
+            </button>
+            <button type="button" onclick="quickFill('principal.bandara', 'principal@school.edu.lk', 'password123')" class="px-2 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-900 font-bold text-left truncate border border-amber-200 transition">
+              <i class="fa-solid fa-school text-amber-600 mr-1"></i> School
+            </button>
+            <button type="button" onclick="quickFill('registrar.uoc', 'registrar@uoc.ac.lk', 'password123')" class="px-2 py-1.5 rounded-lg bg-purple-50 hover:bg-purple-100 text-purple-900 font-bold text-left truncate border border-purple-200 transition">
+              <i class="fa-solid fa-building-columns text-purple-600 mr-1"></i> University
+            </button>
+            <button type="button" onclick="quickFill('officer.fernando', 'police@police.gov.lk', 'password123')" class="px-2 py-1.5 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-900 font-bold text-left truncate border border-teal-200 transition">
+              <i class="fa-solid fa-shield-halved text-teal-700 mr-1"></i> Police
+            </button>
+            <button type="button" onclick="quickFill('officer.wickramasinghe', 'immigration@immigration.gov.lk', 'password123')" class="px-2 py-1.5 rounded-lg bg-orange-50 hover:bg-orange-100 text-orange-900 font-bold text-left truncate border border-orange-200 transition">
+              <i class="fa-solid fa-passport text-orange-600 mr-1"></i> Immigration
+            </button>
+            <button type="button" onclick="quickFill('registrar.vital', 'vital@rgd.gov.lk', 'password123')" class="px-2 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-900 font-bold text-left truncate border border-emerald-200 transition">
+              <i class="fa-solid fa-stamp text-emerald-700 mr-1"></i> Registrar
+            </button>
+            <button type="button" onclick="quickFill('admin', 'admin@ocodr.gov.lk', 'password123')" class="px-2 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-900 font-bold text-left truncate border border-indigo-200 transition">
+              <i class="fa-solid fa-user-shield text-indigo-700 mr-1"></i> Admin
+            </button>
+          </div>
+        </div>
+
+        <!-- New Registration Links: Citizen and Child -->
+        <div class="mt-4 pt-3 border-t border-slate-200 text-center space-y-1.5">
+          <p class="text-xs text-slate-700 font-medium">
+            Don't have an Account yet?
+          </p>
+          <div class="flex flex-wrap items-center justify-center gap-2 text-xs">
+            <button type="button" onclick="closeLoginModal(); openRegisterModal('CITIZEN');" class="text-[#8D153A] hover:underline font-extrabold flex items-center gap-1">
+              <i class="fa-solid fa-user-plus text-[10px]"></i> Register Citizen &rarr;
+            </button>
+            <span class="text-slate-300 font-bold">&bull;</span>
+            <button type="button" onclick="closeLoginModal(); openRegisterModal('CHILD');" class="text-[#00534E] hover:underline font-extrabold flex items-center gap-1">
+              <i class="fa-solid fa-baby text-[10px]"></i> Register Child (Birth Info) &rarr;
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: 2FA OTP Modal Verification -->
+      <div id="login-step-otp" class="p-6 sm:p-8 hidden">
+        <div class="text-center mb-6">
+          <div class="w-14 h-14 bg-emerald-50 border-2 border-emerald-300 text-emerald-700 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-3 shadow-sm">
+            <i class="fa-solid fa-mobile-screen-button"></i>
+          </div>
+          <h3 class="text-2xl font-black text-slate-900">Two-Factor Authentication</h3>
+          <p class="text-xs text-slate-600 mt-1 font-medium">
+            Security code dispatched to your verified contact: <br>
+            <span id="otp-target-display" class="font-mono font-bold text-slate-900">user@email.com</span>
+          </p>
+        </div>
+
+        <!-- 1-Click Auto Fill Hint for Demo Codes -->
+        <div id="otp-dev-hint" class="hidden mb-4 text-center"></div>
+
+        <form id="otp-verification-form" action="javascript:void(0);" method="post" onsubmit="handleOtpSubmit(event)" class="space-y-6">
+          <!-- 6-digit OTP Inputs -->
+          <div class="flex justify-center gap-2" id="otp-input-group">
+            <input type="text" id="login-otp-0" name="login_otp_0" maxlength="1" class="otp-digit-input" data-index="0" autocomplete="one-time-code" inputmode="numeric" autofocus>
+            <input type="text" id="login-otp-1" name="login_otp_1" maxlength="1" class="otp-digit-input" data-index="1" autocomplete="one-time-code" inputmode="numeric">
+            <input type="text" id="login-otp-2" name="login_otp_2" maxlength="1" class="otp-digit-input" data-index="2" autocomplete="one-time-code" inputmode="numeric">
+            <input type="text" id="login-otp-3" name="login_otp_3" maxlength="1" class="otp-digit-input" data-index="3" autocomplete="one-time-code" inputmode="numeric">
+            <input type="text" id="login-otp-4" name="login_otp_4" maxlength="1" class="otp-digit-input" data-index="4" autocomplete="one-time-code" inputmode="numeric">
+            <input type="text" id="login-otp-5" name="login_otp_5" maxlength="1" class="otp-digit-input" data-index="5" autocomplete="one-time-code" inputmode="numeric">
+          </div>
+
+          <!-- Timer &amp; Resend -->
+          <div class="flex items-center justify-between text-xs text-slate-600 px-1 font-semibold">
+            <span id="otp-timer-display" class="flex items-center gap-1.5">
+              <i class="fa-regular fa-clock text-[#8D153A]"></i> Expires in <span id="countdown-clock" class="font-black text-slate-900">05:00</span>
+            </span>
+            <button type="button" id="btn-resend-otp" onclick="resendOtpCode()" class="text-[#8D153A] hover:underline font-bold disabled:opacity-40 disabled:cursor-not-allowed">
+              Resend Code
+            </button>
+          </div>
+
+          <div id="otp-error-msg" class="hidden p-3 bg-red-50 border border-red-300 text-red-800 text-xs rounded-lg font-bold"></div>
+
+          <button type="submit" id="btn-verify-otp-submit" class="w-full btn-sl-green text-white font-black py-3 rounded-xl shadow-md transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-lock-open text-amber-300"></i> Verify Code &amp; Sign In
+          </button>
+
+          <button type="button" onclick="backToCredentials()" class="w-full text-center text-xs text-slate-600 hover:text-slate-900 font-bold">
+            &larr; Back to credentials
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Citizen Self-Registration Modal -->
+  <div id="register-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm hidden">
+    <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-xl mx-4 overflow-hidden relative animate-in fade-in zoom-in-95 duration-200 max-h-[92vh] flex flex-col">
+      
+      <!-- Top Sri Lankan Ribbon -->
+      <div class="sl-ribbon-stripe-thin"></div>
+
+      <!-- Close Button -->
+      <button type="button" onclick="closeRegisterModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100 transition z-10" aria-label="Close modal">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <!-- Modal Header -->
+      <div class="px-6 py-5 border-b border-slate-200 bg-amber-50/60 flex items-center gap-3.5">
+        <div class="w-12 h-12 bg-white border border-amber-300 rounded-xl flex items-center justify-center p-1 shrink-0 shadow-sm">
+          <img src="/images/sri_lanka_emblem.png" alt="Emblem" class="w-9 h-9 object-contain">
+        </div>
+        <div>
+          <h3 id="reg-modal-title" class="text-xl font-black text-slate-900">Official Citizen Enrollment</h3>
+          <p id="reg-modal-desc" class="text-xs text-slate-600 font-medium">Democratic Socialist Republic of Sri Lanka National Digital Identity Core (OCODR).</p>
+        </div>
+      </div>
+
+      <!-- Modal Body (Scrollable) -->
+      <div class="p-6 overflow-y-auto space-y-4 text-xs">
+        
+        <!-- STEP 1: Personal Information Form -->
+        <div id="register-step-details">
+
+          <!-- Enrollment Type Selection Dropdown &amp; Tabs -->
+          <div class="mb-5 p-3.5 bg-gradient-to-r from-amber-50 to-rose-50/40 rounded-xl border-2 border-amber-300 shadow-sm">
+            <div class="flex items-center justify-between mb-2">
+              <label for="reg-type-input" class="block text-xs font-black text-slate-900 uppercase tracking-wider">
+                <i class="fa-solid fa-id-card-clip text-[#8D153A] mr-1"></i> Registration Category / ලියාපදිංචි වර්ගය
+              </label>
+              <span id="reg-type-badge" class="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-rose-100 text-[#8D153A] border border-rose-300">
+                Citizen Selected
+              </span>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-2">
+              <button type="button" id="tab-reg-citizen" onclick="setRegistrationType('CITIZEN')"
+                      class="px-3 py-2.5 rounded-lg font-black text-xs flex items-center justify-center gap-2 border-2 transition shadow-sm bg-[#8D153A] text-white border-[#8D153A]">
+                <i class="fa-solid fa-user-shield text-amber-300"></i>
+                <span>Citizen (Adult)</span>
+              </button>
+              <button type="button" id="tab-reg-child" onclick="setRegistrationType('CHILD')"
+                      class="px-3 py-2.5 rounded-lg font-black text-xs flex items-center justify-center gap-2 border-2 transition shadow-sm bg-white text-slate-800 border-slate-300 hover:border-amber-400">
+                <i class="fa-solid fa-baby text-[#00534E]"></i>
+                <span>Child (Birth Record)</span>
+              </button>
+            </div>
+            <input type="hidden" id="reg-type-input" name="registration_type" value="CITIZEN">
+            <p id="reg-type-desc" class="text-[11px] text-slate-600 font-semibold mt-2">
+              Standard civil enrollment for adult Sri Lankan citizens.
+            </p>
+          </div>
+
+          <form id="register-form" action="javascript:void(0);" method="post" onsubmit="handleRegisterProceedToOtp(event)" class="space-y-4">
+
+            <!-- Child Section Header (Visible in Child Mode) -->
+            <div id="child-info-header" class="hidden p-3 bg-emerald-50 rounded-xl border border-emerald-300 flex items-center gap-2.5 shadow-sm">
+              <i class="fa-solid fa-child text-emerald-800 text-base"></i>
+              <div>
+                <h4 class="text-xs font-black text-emerald-950 uppercase tracking-wide">Child's Particulars (උප්පැන්න සහතිකයට අනුව දරුවාගේ තොරතුරු)</h4>
+                <p class="text-[10px] text-emerald-800 font-semibold">Enter child's full legal name and birth particulars below.</p>
+              </div>
+            </div>
+
+            <!-- Name Fields -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label id="reg-first-name-label" for="reg-first-name" class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1">
+                  First Name <span class="text-rose-600">*</span>
+                </label>
+                <input type="text" id="reg-first-name" name="first_name" autocomplete="given-name" required
+                       class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-semibold text-slate-900 focus:bg-white focus:border-[#8D153A] focus:outline-none">
+              </div>
+              <div>
+                <label id="reg-last-name-label" for="reg-last-name" class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1">
+                  Last Name <span class="text-rose-600">*</span>
+                </label>
+                <input type="text" id="reg-last-name" name="last_name" autocomplete="family-name" required
+                       class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-semibold text-slate-900 focus:bg-white focus:border-[#8D153A] focus:outline-none">
+              </div>
+            </div>
+
+            <div>
+              <label for="reg-middle-names" class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1">Middle Names (Optional)</label>
+              <input type="text" id="reg-middle-names" name="middle_names" autocomplete="additional-name"
+                     class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-semibold text-slate-900 focus:bg-white focus:border-[#8D153A] focus:outline-none">
+            </div>
+
+            <!-- Optional Native Language Names with Auto-Translate Badge -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <label for="reg-name-si" class="block text-xs font-bold text-slate-800 uppercase tracking-wider">
+                    Name in Sinhala (නම)
+                  </label>
+                  <button type="button" id="badge-translate-si" onclick="forceRetranslate()" title="Click to re-translate from English" class="text-[10px] text-emerald-800 font-bold bg-emerald-50 hover:bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-200 flex items-center gap-1 shadow-sm transition cursor-pointer">
+                    <i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i> <span id="badge-translate-si-txt">Auto-translates</span>
+                  </button>
+                </div>
+                <input type="text" id="reg-name-si" name="name_si"
+                       class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-bold text-slate-900 focus:bg-white focus:border-[#8D153A] focus:outline-none">
+              </div>
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <label for="reg-name-ta" class="block text-xs font-bold text-slate-800 uppercase tracking-wider">
+                    Name in Tamil (பெயர்)
+                  </label>
+                  <button type="button" id="badge-translate-ta" onclick="forceRetranslate()" title="Click to re-translate from English" class="text-[10px] text-emerald-800 font-bold bg-emerald-50 hover:bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-200 flex items-center gap-1 shadow-sm transition cursor-pointer">
+                    <i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i> <span id="badge-translate-ta-txt">Auto-translates</span>
+                  </button>
+                </div>
+                <input type="text" id="reg-name-ta" name="name_ta"
+                       class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-bold text-slate-900 focus:bg-white focus:border-[#8D153A] focus:outline-none">
+              </div>
+            </div>
+
+            <!-- Official Citizen Card Photo Preview (Synchronized with Gender Selection) -->
+            <div id="reg-photo-preview-card" class="p-3 bg-gradient-to-r from-amber-50 to-rose-50/40 rounded-xl border-2 border-amber-300/80 flex items-center gap-3.5 shadow-xs transition-all duration-300">
+              <div class="relative w-16 h-20 sm:w-20 sm:h-24 rounded-lg border-2 border-[#D4AF37] overflow-hidden shadow bg-slate-100 shrink-0">
+                <img id="reg-form-photo" src="/images/citizen_bilaal.jpg" alt="Citizen Photo" class="w-full h-full object-cover transition-opacity duration-200">
+                <span id="reg-form-photo-badge" class="absolute bottom-0 inset-x-0 bg-[#8D153A]/90 text-amber-300 text-[8px] font-black py-0.5 text-center uppercase tracking-tight">
+                  Male Photo
+                </span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-1.5 text-[#8D153A] font-black text-xs uppercase tracking-wide">
+                  <i class="fa-solid fa-id-card"></i>
+                  <span>Citizen Card Biometric Portrait</span>
+                </div>
+                <p id="reg-form-photo-desc" class="text-[11px] text-slate-700 font-semibold mt-0.5 leading-tight">
+                  Standard portrait assigned for your official Sri Lankan Smart NIC.
+                </p>
+                <div class="mt-1.5 flex flex-wrap items-center gap-1.5 text-[10px]">
+                  <span id="reg-form-photo-status" class="inline-flex items-center gap-1 font-bold text-emerald-800 bg-emerald-100/90 px-2 py-0.5 rounded-full border border-emerald-300">
+                    <i class="fa-solid fa-circle-check"></i> Male Picture (Bilaal)
+                  </span>
+                  <span class="text-slate-500 font-medium hidden sm:inline">&bull; Auto-syncs with Gender selection</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Demographics Row -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label id="reg-dob-label" for="reg-dob" class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1">
+                  Date of Birth <span class="text-rose-600">*</span>
+                </label>
+                <input type="date" id="reg-dob" name="dob" autocomplete="bday" required
+                       class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-semibold text-slate-900 focus:bg-white focus:border-[#8D153A] focus:outline-none">
+              </div>
+              <div>
+                <label id="reg-gender-label" for="reg-gender" class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1">
+                  Gender <span class="text-rose-600">*</span>
+                </label>
+                <select id="reg-gender" name="gender" onchange="onRegistrationGenderChange(this.value)" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-semibold text-slate-900 focus:bg-white focus:border-[#8D153A] focus:outline-none">
+                  <option value="MALE">Male (පුරුෂ / ஆண்)</option>
+                  <option value="FEMALE">Female (ස්ත්‍රී / பெண்)</option>
+                  <option value="OTHER">Other</option>
+                </select>
+              </div>
+              <div>
+                <label for="reg-blood-group" class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1">Blood Group</label>
+                <select id="reg-blood-group" name="blood_group" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-semibold text-slate-900 focus:bg-white focus:border-[#8D153A] focus:outline-none">
+                  <option value="O+">O+</option>
+                  <option value="O-">O-</option>
+                  <option value="A+">A+</option>
+                  <option value="A-">A-</option>
+                  <option value="B+">B+</option>
+                  <option value="B-">B-</option>
+                  <option value="AB+">AB+</option>
+                  <option value="AB-">AB-</option>
+                  <option value="UNKNOWN">Unknown</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Permanent Residence (Mandatory Field) -->
+            <div>
+              <label id="reg-address-label" for="reg-permanent-address" class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1">
+                Permanent Residence / Address (ස්ථිර ලිපිනය / நிரந்தර முகவரி) <span class="text-rose-600">*</span>
+              </label>
+              <textarea id="reg-permanent-address" name="permanent_address" autocomplete="street-address" required rows="2"
+                        class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs font-semibold text-slate-900 focus:bg-white focus:border-[#8D153A] focus:outline-none"></textarea>
+              <span class="text-[10px] text-slate-500 font-medium">As recorded in official civil registration, printed on the back of your Smart NIC.</span>
+            </div>
+
+            <!-- Place of Birth &amp; NIC -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label id="reg-birth-place-label" for="reg-birth-place" class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1">
+                  Place of Birth (උපන් ස්ථානය / பிறந்த இடம்) <span class="text-rose-600">*</span>
+                </label>
+                <input type="text" id="reg-birth-place" name="birth_place" required
+                       class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-semibold text-slate-900 focus:bg-white focus:border-[#8D153A] focus:outline-none">
+              </div>
+              <div>
+                <label id="reg-nic-label" for="reg-nic" class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1">
+                  NIC Number (Optional for minor pupils)
+                </label>
+                <input type="text" id="reg-nic" name="nic"
+                       class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-semibold text-slate-900 focus:bg-white focus:border-[#8D153A] focus:outline-none">
+              </div>
+            </div>
+
+            <!-- Child's Parents &amp; Birth Certificate Information Section (Active when Child is selected) -->
+            <div id="child-parents-section" class="hidden space-y-4 pt-3 border-t-2 border-emerald-300/80 transition-all duration-300">
+              
+              <!-- Section Header Banner -->
+              <div class="p-3.5 bg-emerald-50 rounded-xl border border-emerald-300 flex items-center gap-3 shadow-sm">
+                <div class="w-9 h-9 rounded-xl bg-[#00534E] text-amber-300 flex items-center justify-center text-base shrink-0 shadow">
+                  <i class="fa-solid fa-people-roof"></i>
+                </div>
+                <div>
+                  <h4 class="text-xs font-black text-emerald-950 uppercase tracking-wide">
+                    Parents' Details &amp; Birth Certificate Particulars (දෙමාපිය තොරතුරු / பெற்றோர் விவரங்கள்)
+                  </h4>
+                  <p class="text-[11px] text-emerald-800 font-medium">
+                    Mandatory for child registration. Records will be permanently registered in the National Civil Birth Registry.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Father's Information -->
+              <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/70 space-y-3">
+                <div class="flex items-center gap-2 text-slate-900 font-black text-xs uppercase tracking-wider border-b border-slate-200 pb-2">
+                  <i class="fa-solid fa-person text-[#8D153A]"></i>
+                  <span>Father's Particulars (පියාගේ විස්තර / தந்தையின் விவரங்கள்)</span>
+                </div>
+
+                <div>
+                  <label for="reg-father-name" class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1">
+                    Father's Full Name (පියාගේ සම්පූර්ණ නම) <span class="text-rose-600">*</span>
+                  </label>
+                  <input type="text" id="reg-father-name" name="father_name"
+                         class="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-900 focus:border-[#8D153A] focus:outline-none">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label for="reg-father-nic" class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1">
+                      Father's NIC Number (පියාගේ ජා.හැ. අංකය) <span class="text-rose-600">*</span>
+                    </label>
+                    <input type="text" id="reg-father-nic" name="father_nic"
+                           class="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-900 focus:border-[#8D153A] focus:outline-none">
+                  </div>
+                  <div>
+                    <label for="reg-father-phone" class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1">
+                      Father's Contact Phone (පියාගේ දුරකථන අංකය) <span class="text-rose-600">*</span>
+                    </label>
+                    <input type="text" id="reg-father-phone" name="father_phone" autocomplete="tel"
+                           class="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-900 focus:border-[#8D153A] focus:outline-none">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Mother's Information -->
+              <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/70 space-y-3">
+                <div class="flex items-center gap-2 text-slate-900 font-black text-xs uppercase tracking-wider border-b border-slate-200 pb-2">
+                  <i class="fa-solid fa-person-dress text-[#00534E]"></i>
+                  <span>Mother's Particulars (මවගේ විස්තර / தாயின் விவரங்கள்)</span>
+                </div>
+
+                <div>
+                  <label for="reg-mother-name" class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1">
+                    Mother's Full Name (මවගේ සම්පූර්ණ නම) <span class="text-rose-600">*</span>
+                  </label>
+                  <input type="text" id="reg-mother-name" name="mother_name"
+                         class="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-900 focus:border-[#8D153A] focus:outline-none">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label for="reg-mother-nic" class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1">
+                      Mother's NIC Number (මවගේ ජා.හැ. අංකය) <span class="text-rose-600">*</span>
+                    </label>
+                    <input type="text" id="reg-mother-nic" name="mother_nic"
+                           class="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-900 focus:border-[#8D153A] focus:outline-none">
+                  </div>
+                  <div>
+                    <label for="reg-mother-phone" class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1">
+                      Mother's Contact Phone (මවගේ දුරකථන අංකය) <span class="text-rose-600">*</span>
+                    </label>
+                    <input type="text" id="reg-mother-phone" name="mother_phone" autocomplete="tel"
+                           class="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-900 focus:border-[#8D153A] focus:outline-none">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Birth Certificate Hospital &amp; Informant Details -->
+              <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/70 space-y-3">
+                <div class="flex items-center gap-2 text-slate-900 font-black text-xs uppercase tracking-wider border-b border-slate-200 pb-2">
+                  <i class="fa-solid fa-stamp text-amber-700"></i>
+                  <span>Birth Certificate Data (උප්පැන්න සහතික තොරතුරු)</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label for="reg-birth-hospital" class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1">
+                      Hospital / Birth Facility (උපන් රෝහල)
+                    </label>
+                    <input type="text" id="reg-birth-hospital" name="birth_hospital"
+                           class="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-900 focus:border-[#8D153A] focus:outline-none">
+                  </div>
+                  <div>
+                    <label for="reg-birth-attendant" class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1">
+                      Attending Doctor / Obstetrician
+                    </label>
+                    <input type="text" id="reg-birth-attendant" name="birth_attendant"
+                           class="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-900 focus:border-[#8D153A] focus:outline-none">
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label for="reg-birth-informant" class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1">
+                      Informant Full Name (දැනුම්දෙන්නා)
+                    </label>
+                    <input type="text" id="reg-birth-informant" name="birth_informant"
+                           class="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-900 focus:border-[#8D153A] focus:outline-none">
+                  </div>
+                  <div>
+                    <label for="reg-informant-nic" class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1">
+                      Informant NIC Number
+                    </label>
+                    <input type="text" id="reg-informant-nic" name="informant_nic"
+                           class="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-900 focus:border-[#8D153A] focus:outline-none">
+                  </div>
+                  <div>
+                    <label for="reg-informant-phone" class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1">
+                      Informant Contact Phone
+                    </label>
+                    <input type="text" id="reg-informant-phone" name="informant_phone" autocomplete="tel"
+                           class="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-900 focus:border-[#8D153A] focus:outline-none">
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Contact Phone &amp; Email -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label id="reg-phone-label" for="reg-phone" class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1">
+                  Phone Number <span class="text-rose-600">*</span>
+                </label>
+                <input type="text" id="reg-phone" name="contact_phone" autocomplete="tel" required
+                       class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-semibold text-slate-900 focus:bg-white focus:border-[#8D153A] focus:outline-none">
+              </div>
+              <div>
+                <label id="reg-email-label" for="reg-email" class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1">
+                  Registered Real Email Address <span class="text-rose-600">*</span>
+                </label>
+                <input type="email" id="reg-email" name="email" autocomplete="email" required
+                       class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-semibold text-slate-900 focus:bg-white focus:border-[#8D153A] focus:outline-none">
+              </div>
+            </div>
+
+            <span class="text-[10px] text-emerald-800 font-bold block bg-emerald-50 p-2 rounded-lg border border-emerald-200">
+              <i class="fa-solid fa-shield-halved"></i> Verification OTP will be dispatched to this email address or phone number.
+            </span>
+
+            <!-- Username &amp; Password -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label for="reg-username" class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1">
+                  Username <span class="text-rose-600">*</span>
+                </label>
+                <input type="text" id="reg-username" name="reg_username" autocomplete="username" required
+                       class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-semibold text-slate-900 focus:bg-white focus:border-[#8D153A] focus:outline-none">
+              </div>
+              <div>
+                <label for="reg-password" class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1">
+                  Password <span class="text-rose-600">*</span>
+                </label>
+                <input type="password" id="reg-password" name="reg_password" autocomplete="new-password" required minlength="6"
+                       class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-semibold text-slate-900 focus:bg-white focus:border-[#8D153A] focus:outline-none">
+              </div>
+              <div>
+                <label for="reg-confirm-password" class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1">
+                  Confirm Password <span class="text-rose-600">*</span>
+                </label>
+                <input type="password" id="reg-confirm-password" name="confirm_password" autocomplete="new-password" required minlength="6"
+                       class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-semibold text-slate-900 focus:bg-white focus:border-[#8D153A] focus:outline-none">
+              </div>
+            </div>
+
+            <!-- Alert Container -->
+            <div id="register-error-msg" class="hidden p-3 bg-red-50 border border-red-300 text-red-800 text-xs rounded-lg font-bold"></div>
+
+            <!-- Submit Button: Step 1 Proceed -->
+            <button type="submit" id="btn-register-proceed" class="w-full btn-sl-maroon text-white font-black py-3 rounded-xl shadow-md transition flex items-center justify-center gap-2">
+              <span>Proceed to 2FA Verification (Send OTP)</span> <i class="fa-solid fa-arrow-right text-xs text-amber-300"></i>
+            </button>
+          </form>
+        </div>
+
+        <!-- STEP 2: OTP Verification Form (Only when OTP is verified is data saved!) -->
+        <div id="register-step-otp" class="hidden space-y-5 py-2">
+          <div class="text-center">
+            <div class="w-14 h-14 bg-emerald-50 border-2 border-emerald-300 text-emerald-700 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-3 shadow-sm">
+              <i class="fa-solid fa-mobile-screen-button"></i>
+            </div>
+            <h4 class="text-xl font-black text-slate-900">Verify Your Registration</h4>
+            <p class="text-xs text-slate-600 mt-1 font-medium">
+              We have dispatched a 6-digit verification code to: <br>
+              <span id="reg-otp-target-display" class="font-mono font-bold text-slate-900">pupil@domain.com</span>
+            </p>
+          </div>
+
+          <!-- Dev OTP Hint for Quick Testing -->
+          <div id="reg-otp-dev-hint" class="hidden text-center"></div>
+
+          <form id="register-otp-form" action="javascript:void(0);" method="post" onsubmit="handleRegisterConfirmOtp(event)" class="space-y-5">
+            <!-- 6-digit OTP Inputs -->
+            <div class="flex justify-center gap-2" id="reg-otp-input-group">
+              <input type="text" id="reg-otp-0" name="reg_otp_0" maxlength="1" class="otp-digit-input reg-otp-digit" data-index="0" autocomplete="one-time-code" inputmode="numeric" autofocus>
+              <input type="text" id="reg-otp-1" name="reg_otp_1" maxlength="1" class="otp-digit-input reg-otp-digit" data-index="1" autocomplete="one-time-code" inputmode="numeric">
+              <input type="text" id="reg-otp-2" name="reg_otp_2" maxlength="1" class="otp-digit-input reg-otp-digit" data-index="2" autocomplete="one-time-code" inputmode="numeric">
+              <input type="text" id="reg-otp-3" name="reg_otp_3" maxlength="1" class="otp-digit-input reg-otp-digit" data-index="3" autocomplete="one-time-code" inputmode="numeric">
+              <input type="text" id="reg-otp-4" name="reg_otp_4" maxlength="1" class="otp-digit-input reg-otp-digit" data-index="4" autocomplete="one-time-code" inputmode="numeric">
+              <input type="text" id="reg-otp-5" name="reg_otp_5" maxlength="1" class="otp-digit-input reg-otp-digit" data-index="5" autocomplete="one-time-code" inputmode="numeric">
+            </div>
+
+            <!-- Timer &amp; Resend -->
+            <div class="flex items-center justify-between text-xs text-slate-600 px-1 font-semibold">
+              <span class="flex items-center gap-1.5">
+                <i class="fa-regular fa-clock text-[#8D153A]"></i> Code valid for <span id="reg-countdown-clock" class="font-black text-slate-900">05:00</span>
+              </span>
+              <button type="button" onclick="resendRegisterOtp()" class="text-[#8D153A] hover:underline font-bold">
+                Resend Code
+              </button>
+            </div>
+
+            <div id="register-otp-error-msg" class="hidden p-3 bg-red-50 border border-red-300 text-red-800 text-xs rounded-lg font-bold"></div>
+
+            <button type="submit" id="btn-register-confirm-otp" class="w-full btn-sl-green text-white font-black py-3 rounded-xl shadow-md transition flex items-center justify-center gap-2">
+              <i class="fa-solid fa-cloud-arrow-up text-amber-300"></i> Verify OTP &amp; Save Citizen Record
+            </button>
+
+            <button type="button" onclick="backToRegisterDetails()" class="w-full text-center text-xs text-slate-600 hover:text-slate-900 font-bold">
+              &larr; Back to edit details
+            </button>
+          </form>
+        </div>
+
+        <!-- STEP 3: Registration Success Banner -->
+        <div id="register-step-success" class="hidden text-center py-6 space-y-4">
+          <div class="w-16 h-16 bg-emerald-50 border-2 border-emerald-400 text-emerald-700 rounded-full flex items-center justify-center text-3xl mx-auto shadow-md">
+            <i class="fa-solid fa-check"></i>
+          </div>
+          <div>
+            <h4 id="reg-success-title" class="text-xl font-black text-slate-900">Record Successfully Saved!</h4>
+            <p id="reg-success-desc" class="text-xs text-slate-600 font-medium mt-1">
+              Your Sri Lankan National Digital Identity has been registered in the national core registry.
+            </p>
+          </div>
+          <div class="p-4 bg-amber-50 rounded-xl border border-amber-300 text-xs text-left space-y-1.5 shadow-sm">
+            <div class="flex justify-between">
+              <span class="font-bold text-slate-700">Citizen / Pupil ID:</span>
+              <span id="new-cit-id" class="font-mono font-black text-[#8D153A]"></span>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-bold text-slate-700">NIC Card Number:</span>
+              <span id="new-cit-nic" class="font-mono font-bold text-slate-900"></span>
+            </div>
+            <div id="new-cit-birth-row" class="hidden justify-between border-t border-amber-200/80 pt-1.5">
+              <span class="font-bold text-emerald-950 flex items-center gap-1">
+                <i class="fa-solid fa-baby text-[#00534E]"></i> Birth Certificate Reg:
+              </span>
+              <span id="new-cit-birth-reg" class="font-mono font-black text-emerald-800"></span>
+            </div>
+          </div>
+          <button type="button" onclick="goToDashboard()" class="w-full btn-sl-maroon text-white font-black py-3 rounded-xl shadow-md transition flex items-center justify-center gap-2">
+            <span>Access Dashboard &amp; Digital Records &rarr;</span>
+          </button>
+        </div>
+
+        <!-- Switch to Sign In -->
+        <div class="mt-4 pt-3 border-t border-slate-200 text-center">
+          <p class="text-xs text-slate-700 font-medium">
+            Already registered?
+            <button type="button" onclick="closeRegisterModal(); openLoginModal();" class="text-[#8D153A] hover:underline font-extrabold ml-1">
+              Sign In to Portal &rarr;
+            </button>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer (White with Sri Lankan Ribbon) -->
+  <footer class="mt-auto bg-white border-t border-slate-200 text-slate-700 py-8 text-xs font-medium">
+    <div class="sl-ribbon-stripe-thin mb-6"></div>
+    <div class="max-w-7xl mx-auto px-4 text-center sm:flex sm:justify-between sm:items-center">
+      <div class="flex items-center justify-center sm:justify-start space-x-3 mb-3 sm:mb-0">
+        <img src="/images/sri_lanka_emblem.png" alt="Emblem" class="w-7 h-7 object-contain">
+        <p class="font-bold text-slate-900">&copy; 2026 Democratic Socialist Republic of Sri Lanka. National Digital Identity Authority (OCODR).</p>
+      </div>
+      <p class="text-slate-600 font-semibold">Government Security Tier 4 &bull; 256-Bit Cryptographic Ledger &bull; ISO/IEC 27001 Certified</p>
+    </div>
+  </footer>
+
+  <!-- Frontend Application Script -->
+  <script src="/js/app.js?v=2.0"></script>
+</body>
+</html>

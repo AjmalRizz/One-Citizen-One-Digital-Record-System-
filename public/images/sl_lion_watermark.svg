@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <!-- Circular Guilloche Security Ring -->
+  <circle cx="100" cy="100" r="92" stroke="#FFBE29" stroke-width="1.5" stroke-dasharray="2,2" opacity="0.45"/>
+  <circle cx="100" cy="100" r="88" stroke="#8D153A" stroke-width="0.8" opacity="0.25"/>
+  <circle cx="100" cy="100" r="84" stroke="#FFBE29" stroke-width="1" opacity="0.35"/>
+  <circle cx="100" cy="100" r="76" stroke="#00534E" stroke-width="0.5" stroke-dasharray="3,1" opacity="0.25"/>
+
+  <!-- Heraldic Lion with Sword Silhouette in Gold -->
+  <g fill="#E5A823" fill-opacity="0.32" stroke="#B8860B" stroke-opacity="0.2" stroke-width="0.5">
+    <!-- Sword blade & hilt -->
+    <path d="M 125,58 L 138,42 L 140,44 L 128,62 Z" />
+    <path d="M 122,60 L 130,66 L 128,68 L 120,62 Z" />
+    <circle cx="120" cy="62" r="3"/>
+    
+    <!-- Lion Head & Mane -->
+    <path d="M 112,65 C 114,60 118,58 122,60 C 120,66 116,70 114,74 C 116,72 120,72 122,76 C 118,80 114,80 110,82 C 114,84 116,88 114,92 C 110,90 108,86 106,84 C 104,88 102,94 98,96 C 96,92 98,86 100,82 C 96,82 92,86 90,90 C 88,86 90,80 94,76 C 90,74 86,76 84,80 C 84,74 88,70 92,68 C 88,66 84,66 82,70 C 84,64 90,62 96,62 C 98,58 104,56 108,58 C 110,60 110,62 112,65 Z"/>
+    
+    <!-- Lion Eye & Snout -->
+    <circle cx="114" cy="68" r="1.5" fill="#8D153A" fill-opacity="0.4"/>
+    <path d="M 118,70 L 122,71 L 119,73 Z"/>
+    
+    <!-- Raised Right Foreleg grasping sword -->
+    <path d="M 112,78 C 116,76 122,72 124,66 C 122,68 118,72 114,75 Z"/>
+    
+    <!-- Body & Ribs -->
+    <path d="M 94,82 C 86,84 78,92 76,102 C 84,106 94,108 104,104 C 108,98 108,90 102,86 Z"/>
+    <path d="M 76,102 C 72,110 74,120 78,126 C 84,128 92,126 98,122 C 96,116 98,108 94,104 Z"/>
+
+    <!-- Left Foreleg standing -->
+    <path d="M 102,104 C 104,112 106,124 104,136 C 102,138 98,138 96,136 C 98,126 96,114 94,108 Z"/>
+
+    <!-- Hind Legs -->
+    <path d="M 78,126 C 76,134 72,142 68,148 C 64,148 62,146 64,142 C 68,136 72,130 74,124 Z"/>
+    <path d="M 88,126 C 88,134 86,142 84,148 C 82,148 80,146 82,142 C 84,136 86,130 86,124 Z"/>
+
+    <!-- Curled Tail with tuft -->
+    <path d="M 74,104 C 66,98 62,88 64,78 C 66,68 76,64 84,66 C 82,68 74,70 72,78 C 70,84 72,92 76,98 Z"/>
+    <circle cx="85" cy="66" r="4"/>
+  </g>
+</svg>
