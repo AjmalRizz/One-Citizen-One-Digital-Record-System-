@@ -2,7 +2,7 @@
 
 A web platform where every Sri Lankan citizen gets one digital identity that holds their records for life: birth, health, school, university, passport, licence, marriage. Hospitals, schools, police and other offices read and update only the part they're allowed to touch, so nobody has to carry the same paper documents from office to office.
 
-Built for CSE5015 (Computing Project) at the International College of Business and Technology.
+Built for Computing Project, International College of Business and Technology. Team project of 5.
 
 ![Landing page](docs/screenshots/01-landing.png)
 
@@ -64,8 +64,8 @@ Built for CSE5015 (Computing Project) at the International College of Business a
 You need Node.js 18 or newer and MySQL (XAMPP works).
 
 ```bash
-git clone <your-repo-url>
-cd OCODR
+git clone https://github.com/AjmalRizz/One-Citizen-One-Digital-Record-System-.git
+cd One-Citizen-One-Digital-Record-System-
 npm install
 ```
 
@@ -104,7 +104,7 @@ Everything seeded uses the password `password123`. The Sign In window has a role
 | Immigration | `officer.wickramasinghe` |
 | Admin | `admin` |
 
-These accounts and the demo shortcut that skips the one-time code are for demos only. Remove them before putting this anywhere real.
+**Warning:** These accounts and the demo shortcut that skips the one-time code are for demos only. Remove them before putting this anywhere real.
 
 ## Project layout
 
@@ -145,7 +145,13 @@ It runs 10 checks end to end: logins for each role, access limits, a birth regis
 
 ## Team
 
-Yumna Faris, Hana Hilmy, Uzman Badusa, Ajmal Rizwan, Ahmad Bilaal
+| Name | Role |
+|---|---|
+| Yumna Faris | TODO |
+| Hana Hilmy | TODO |
+| Uzman Badusa | TODO |
+| Ajmal Rizwan | TODO |
+| Ahmad Bilaal | TODO |
 
 ## License
 
